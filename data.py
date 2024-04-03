@@ -11,10 +11,10 @@ print('Description:\n',stoch.describe())
 print('Covariance:\n',stoch.cov())
 print('Correlation:\n',stoch.corr())
 
-plt.scatter(stoch['open'],stoch['volume'])
+plt.scatter(df['volume'],df['rsi_3'])
 plt.show() 
 
-plt.bar(stoch['open'],stoch['volume'])
+plt.bar(df['volume'],df['open'])
 plt.show() 
 
 sns.heatmap(stoch.corr())
