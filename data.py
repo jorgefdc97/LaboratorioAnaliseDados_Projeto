@@ -18,6 +18,8 @@ df_sma = df.loc[:,'sma_3']
 
 df_all = pd.concat([df_OV,df_rsi,df_stoch,df_sr,df_mom,df_will,df_obv,df_bb,df_ema,df_sma],axis=1)
 
+ 
+
 print('Df:\n',df_all)
 print('Description:\n',df_all.describe())
 print('Covariance:\n',df_all['high'].cov(df_all['bbands_3_upperband']))
