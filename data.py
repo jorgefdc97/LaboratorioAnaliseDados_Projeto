@@ -10,12 +10,13 @@ df_rsi = df.loc[:,'rsi_3']
 df_stoch = df.loc[:,'stoch_3_6_slowk']
 df_sr = df.loc[:,'stochrsi_3_6_fastk']
 df_mom = df.loc[:,'mom_3']
+df_will = df.loc[:,'willr_3']
 df_obv = df.loc[:,'obv_0']
-df_bb = df.loc[:,'bbands_3_upperband':'bbands_3_lowerband']
+df_bb = df.loc[:,['bbands_3_upperband','bbands_3_lowerband']]
 df_ema = df.loc[:,'ema_3']
 df_sma = df.loc[:,'sma_3']
 
-df_all = pd.concat([df_OV,df_rsi,df_stoch,df_sr,df_mom,df_obv,df_bb,df_ema,df_sma],axis=1)
+df_all = pd.concat([df_OV,df_rsi,df_stoch,df_sr,df_mom,df_will,df_obv,df_bb,df_ema,df_sma],axis=1)
 
 print('Df:\n',df_all)
 print('Description:\n',df_all.describe())
