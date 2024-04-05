@@ -7,8 +7,8 @@ df = pd.read_csv("GOOG.US_D1_cleaned.csv")
 
 df_OV = df.loc[:,'open':'volume'] 
 df_rsi = df.loc[:,'rsi_3']
-df_stoch = df.loc[:,'stoch_3_6_slowk']
-df_sr = df.loc[:,'stochrsi_3_6_fastk']
+df_stoch = df.loc[:,['stoch_3_6_slowk','stoch_3_6_slowd']]
+df_sr = df.loc[:,['stochrsi_3_6_fastk','stochrsi_3_6_fastd']]
 df_mom = df.loc[:,'mom_3']
 df_will = df.loc[:,'willr_3']
 df_obv = df.loc[:,'obv_0']
