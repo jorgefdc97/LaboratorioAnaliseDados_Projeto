@@ -32,4 +32,20 @@ plt.show()
 sns.heatmap(df_all.corr())
 plt.show() 
 
+hist = df_all.loc[:,['high','bbands_3_upperband']]
+
+
+plt.hist(hist)
+plt.gca().set(title = 'Histogram',xlabel = 'high',ylabel = 'bbands_3_upperband')
+plt.show() 
+
+'''plt.plot(df["datetime"],df["high"])'''
+plt.plot(df["high"])
+plt.gca().set(title = 'Highest value of stock sold by day number',xlabel = 'days',ylabel = 'value')
+plt.show()
+
+'''plt.plot(df["datetime"],df['volume'])'''
+plt.plot(df['volume'])
+plt.gca().set(title = 'volume of stock sold by day number',xlabel ='days',ylabel = 'volume sold')
+plt.show()
 
