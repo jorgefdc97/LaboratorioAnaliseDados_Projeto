@@ -29,7 +29,7 @@ print('Correlation:\n',df_all.corr())
 plt.scatter(df['high'],df['bbands_3_upperband'])
 plt.show() 
 
-sns.heatmap(df_all.corr())
+sns.heatmap(df_all.corr(),annot=True)
 plt.show() 
 
 hist = df_all.loc[:,['high','bbands_3_upperband']]
