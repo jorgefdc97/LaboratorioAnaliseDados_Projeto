@@ -22,14 +22,12 @@ df_all = pd.concat([df_OV,df_rsi,df_stoch,df_sr,df_mom,df_will,df_obv,df_bb,df_e
 
 print('Df:\n',df_all)
 print('Description:\n',df_all.describe())
-print('Covariance:\n',df_all['high'].cov(df_all['bbands_3_upperband']))
+print('Covariance:\n',df_all.cov()) 
+'''df_all['high'].cov(df_all['bbands_3_upperband'])'''
 print('Correlation:\n',df_all.corr())
 
-plt.scatter(df['volume'],df['mom_3'])
+plt.scatter(df['high'],df['bbands_3_upperband'])
 plt.show() 
-
-plt.bar(df['open'],df['obv_0'])
-plt.show()
 
 sns.heatmap(df_all.corr())
 plt.show() 
