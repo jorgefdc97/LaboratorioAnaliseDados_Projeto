@@ -27,16 +27,17 @@ print('Covariance:\n',df_all.cov())
 print('Correlation:\n',df_all.corr())
 
 plt.scatter(df['high'],df['bbands_3_upperband'])
+plt.gca().set(title = 'Scatter Plot',xlabel = 'high',ylabel = 'bbands_3_upperband')
 plt.show() 
 
 sns.heatmap(df_all.corr(),annot=True)
 plt.show() 
 
-hist = df_all.loc[:,['high','bbands_3_upperband']]
+hist = df_all.loc[:,['high']]
 
 
 plt.hist(hist)
-plt.gca().set(title = 'Histogram',xlabel = 'high',ylabel = 'bbands_3_upperband')
+plt.gca().set(title = 'Histogram',xlabel = 'high',ylabel = 'number of days')
 plt.show() 
 
 '''plt.plot(df["datetime"],df["high"])'''
