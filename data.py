@@ -21,10 +21,10 @@ df_sma = df.loc[:, 'sma_3']
 # Concatenate all features
 df_all = pd.concat([df_OV, df_rsi, df_stoch, df_sr, df_mom, df_will, df_obv, df_bb, df_ema, df_sma], axis=1)
 
-# Selection of the lines from 3 mounths before the russian war
+# Selection of the lines from 3 mounths before the release of ChatGPT
 df_mean_3b = df_all[1545:1608]
 
-# Selection of the lines from 3 mounths after the russian war
+# Selection of the lines from 3 mounths after the russian of ChatGPT
 df_mean_3a = df_all[1609:1682]
 
 # Describe
