@@ -21,9 +21,16 @@ df_sma = df.loc[:, 'sma_3']
 # Concatenate all features
 df_all = pd.concat([df_OV, df_rsi, df_stoch, df_sr, df_mom, df_will, df_obv, df_bb, df_ema, df_sma], axis=1)
 
+# Selection of the lines from 3 mounths before the russian war
+df_mean_3b = df_all[1545:1608]
+
+# Selection of the lines from 3 mounths after the russian war
+df_mean_3a = df_all[1609:1682]
+
 # Describe
 pd.set_option('display.max_columns', None)
-print('Description:\n', df_all.describe())
+print('Description:\n', df_mean_3b.describe())
+print('Description:\n', df_mean_3a.describe())
 print('Covariance:\n', df_all.cov())
 print('Correlation:\n', df_all.corr())
 
