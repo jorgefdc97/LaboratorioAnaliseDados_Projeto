@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-
+from sklearn.metrics import mean_squared_error, r2_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.model_selection import train_test_split,cross_val_score
+from sklearn.naive_bayes import GaussianNB
 # Read the dataset
 df = pd.read_csv("GOOG.US_D1_cleaned.csv")
 
@@ -29,7 +29,7 @@ df_mean_3b = df_all[1545:1608]
 
 # Selection of the lines from 3 mounths after the russian war
 df_mean_3a = df_all[1609:1682]
-
+'''
 # Describe
 pd.set_option('display.max_columns', None)
 print('Description:\n', df_mean_3b.describe())
@@ -100,11 +100,11 @@ plt.xlabel('Date')
 plt.ylabel('Price')
 plt.legend()
 plt.show()
-
+'''
 # Linear Regression
-bostonX=df_all.iloc[:, 1:]
-bostonY=df_all['open']
-X_train, X_test, Y_train, Y_test = train_test_split(bostonX, bostonY, test_size=0.3)
+X=df_all.iloc[:, 1:]
+Y=df_all['open']
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3)
 lr = LinearRegression()
 lr.fit(X_train, Y_train)
 print("The model performance using score:")
@@ -116,3 +116,31 @@ r2 = r2_score(Y_test, y_test_predict)
 print("The model performance using R2")
 print("--------------------------------------")
 print('R2 score is {}'.format(r2))
+
+# Naive Bayes 
+def rating_function(x,y):
+    if x >= y:
+        return 1
+    else:
+        return 0
+
+df["drop"] =  df[['open','close']].apply(rating_function)
+
+X=df_all.iloc[:, :]
+Y=df_all['drop']
+X2_train, X2_test, y2_train, y2_test = train_test_split(X, Y, test_size=0.3, random_state=0)
+gnb = GaussianNB()
+y_pred = gnb.fit(X2_train, y2_train).predict(X2_test)
+print("Number of mislabeled points out of a total %d points : %d"
+      % (X2_test.shape[0], (y2_test != y_pred).sum()))
+print(classification_report(y2_test, y_pred))
+cm = confusion_matrix(y2_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+disp.plot()
+plt.show()
+
+gnb = GaussianNB()
+scores = cross_val_score(gnb, X, Y, cv=5)
+print("------------------------------------\n",scores)
+print('\n Mean:', scores.mean())
+print('\n STD:', scores.std())
