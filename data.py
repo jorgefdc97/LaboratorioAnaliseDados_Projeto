@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Read the dataset
 df = pd.read_csv("GOOG.US_D1_cleaned.csv")
@@ -97,3 +100,19 @@ plt.xlabel('Date')
 plt.ylabel('Price')
 plt.legend()
 plt.show()
+
+# Linear Regression
+bostonX=df_all.iloc[:, 1:]
+bostonY=df_all['open']
+X_train, X_test, Y_train, Y_test = train_test_split(bostonX, bostonY, test_size=0.3)
+lr = LinearRegression()
+lr.fit(X_train, Y_train)
+print("The model performance using score:")
+print("--------------------------------------")
+print(lr.score(X_test,Y_test))
+y_test_predict = lr.predict(X_test)
+rmse = (np.sqrt(mean_squared_error(Y_test, y_test_predict)))
+r2 = r2_score(Y_test, y_test_predict)
+print("The model performance using R2")
+print("--------------------------------------")
+print('R2 score is {}'.format(r2))
