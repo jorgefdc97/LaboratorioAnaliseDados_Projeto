@@ -23,10 +23,12 @@ df_bb = df.loc[:, ['bbands_3_upperband', 'bbands_3_lowerband']]
 df_ema = df.loc[:, 'ema_3']
 df_sma = df.loc[:, 'sma_3']
 
-
 # Concatenate all features
 df_all = pd.concat([df_OV, df_rsi, df_stoch, df_sr, df_mom, df_will, df_obv, df_bb, df_ema, df_sma], axis=1)
 
+df_all["open_close_diff"] = df_all["open"] - df_all["close"].shift(1)
+df_all.fillna(1, inplace=True)
+print(df_all.head(5))
 # Selection of the lines from 3 mounths before the russian war
 df_mean_3b = df_all[1545:1608]
 
@@ -113,6 +115,7 @@ df_mean_3b = df_all[1545:1608]
 # Selection of the lines from 3 mounths after the russian of ChatGPT
 df_mean_3a = df_all[1609:1682]
 
+
 # Describe
 pd.set_option('display.max_columns', None)
 print('Description:\n', df_mean_3b.describe())
@@ -163,17 +166,18 @@ print("--------------------------------------")
 print('R2 score is {}'.format(r2))
 
 # Naive Bayes 
-def rating_function(x,y):
-    if x >= y:
+def rating_function(open_position):
+    if open_position >= 0:
         return 1
     else:
         return 0
 
-df["drop"] =  df[['open','close']].apply(rating_function)
+
+df_all["open_close"] = df_all["open_close_diff"].apply(rating_function)
 
 
 X=df_all.iloc[:, :]
-Y=df_all['drop']
+Y=df_all['open_close']
 X2_train, X2_test, y2_train, y2_test = train_test_split(X, Y, test_size=0.3, random_state=0)
 gnb = GaussianNB()
 y_pred = gnb.fit(X2_train, y2_train).predict(X2_test)
@@ -190,7 +194,7 @@ scores = cross_val_score(gnb, X, Y, cv=5)
 print("------------------------------------\n",scores)
 print('\n Mean:', scores.mean())
 print('\n STD:', scores.std())
-=======
+
 # Plotting volume over time
 plt.figure(figsize=(10, 6))
 plt.plot(df['volume'], color='green')
