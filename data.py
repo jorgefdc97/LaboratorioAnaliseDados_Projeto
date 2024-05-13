@@ -234,3 +234,79 @@ plt.ylabel('Price')
 plt.legend()
 plt.show()
 
+wcss = [] # sum of the squared distance
+for i in range(1, 11):
+    kmeans = KMeans(n_clusters=i,
+                    init='k-means++',
+                    max_iter=300,
+                    n_init=10,
+                    random_state=0)
+    kmeans.fit(df_all[['open','high','low']])
+    wcss.append(kmeans.inertia_)
+
+plt.plot(range(1,11),wcss)
+plt.title('The Elbow Method Graph')
+plt.xlabel('Number of clusters')
+plt.ylabel('WCSS')
+plt.show()
+
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+rf = KMeans(n_clusters=5) # Change to 5 clusters
+clf = rf.fit(df_all[['open','high','low']])
+centroids = clf.cluster_centers_
+score = silhouette_score(df_all[['open','high','low']], clf.labels_)
+print(centroids)
+print(score)
+
+X = df_all[['open','high','low']]
+y_kmeans = clf.labels_
+
+plt.scatter(X[y_kmeans == 0]['high'],
+            X[y_kmeans == 0]['low'],
+            s=100, c='purple',
+            label='Cluster 1')
+plt.scatter(X[y_kmeans == 1]['high'],
+            X[y_kmeans == 1]['low'],
+            s=100, c='orange',
+            label='Cluster 2')
+plt.scatter(X[y_kmeans == 2]['high'],
+            X[y_kmeans == 2]['low'],
+            s=100, c='green',
+            label='Cluster 3')
+plt.scatter(X[y_kmeans == 3]['high'],
+            X[y_kmeans == 3]['low'],
+            s=100, c='blue',
+            label='Cluster 4')
+plt.scatter(X[y_kmeans == 4]['high'],
+            X[y_kmeans == 4]['low'],
+            s=100, c='red',
+            label='Cluster 5')
+
+# Plotting the centroids of the clusters
+plt.scatter(centroids[:, 1],
+            centroids[:, 2],
+            s=400, c='black',
+            marker="x",
+            label='Centroids')
+
+plt.legend()
+plt.xlabel('high')
+plt.ylabel('low')
+plt.show()
+
+# Hierarchical clustering
+linkage_matrix = linkage(df_all[['open','high','low']], 'ward')
+
+plot = plt.figure(figsize=(14, 7))
+dendrogram(
+    linkage_matrix,
+    truncate_mode='lastp',
+    p=20,
+    color_threshold=0,
+)
+plt.title('Hierarchical Clustering Dendrogram (linkage=ward)')
+plt.xlabel('Sample index')
+plt.ylabel('Distance')
+plt.show()
