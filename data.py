@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score, classification_report, confusion_matrix, \
-    ConfusionMatrixDisplay, mean_absolute_error
+from sklearn.metrics import mean_squared_error, r2_score, classification_report, confusion_matrix,ConfusionMatrixDisplay, mean_absolute_error
 from sklearn.model_selection import train_test_split,cross_val_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.cluster import KMeans
@@ -323,59 +322,8 @@ plt.show()
 '''
 # Perceptron
 target = df_all['open']
-data = df_all.iloc[:, 2:]
+data = df_all.iloc[:,1:]
 labels = target
-
-# Split data into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(data.values, target.values, test_size=0.5, random_state=0)
-
-# Initialize Perceptron classifier
-clf = Perceptron()
-
-# Train the classifier
-clf.fit(X_train, y_train)
-
-# Predict labels for test set
-y_pred = clf.predict(X_test)
-
-# Print accuracy score
-print("Accuracy:", clf.score(X_test, y_test))
-
-# Print confusion matrix
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
-print("---------------------\n")
-
-# MLPClassifier
-
-# Split data into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(data.values, target.values, test_size=0.5, random_state=0)
-
-# Initialize MLPClassifier with max_iter=550
-clf = MLPClassifier(max_iter=550)
-
-# Train the classifier
-clf.fit(X_train, y_train)
-
-# Predict labels for test set
-y_pred = clf.predict(X_test)
-
-# Print coefficients of the neural network
-print("Coefficients:", clf.coefs_)
-
-# Print number of layers
-print("Number of layers:", clf.n_layers_)
-
-# Print number of outputs
-print("Number of outputs:", clf.n_outputs_)
-
-# Print accuracy score
-print("Accuracy:", clf.score(X_test, y_test))
-
-# Print confusion matrix
-print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
-print("---------------------\n")
 
 #  MLPRegressor
 
