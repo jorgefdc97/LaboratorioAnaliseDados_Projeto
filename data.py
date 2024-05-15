@@ -4,9 +4,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import mean_squared_error, r2_score, classification_report, confusion_matrix, \
+    ConfusionMatrixDisplay, mean_absolute_error
 from sklearn.model_selection import train_test_split,cross_val_score
 from sklearn.naive_bayes import GaussianNB
+from sklearn.cluster import KMeans
+from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.decomposition import PCA
+from sklearn.decomposition import TruncatedSVD
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPRegressor
+
 
 # Read the dataset
 df = pd.read_csv("GOOG.US_D1_cleaned.csv")
@@ -148,7 +158,7 @@ plt.ylabel('High value')
 plt.xticks(rotation=45)
 
 plt.show()
-'''
+
 # Linear Regression
 X=df_all.iloc[:, 1:]
 Y=df_all['open']
@@ -310,3 +320,113 @@ plt.title('Hierarchical Clustering Dendrogram (linkage=ward)')
 plt.xlabel('Sample index')
 plt.ylabel('Distance')
 plt.show()
+'''
+# Perceptron
+target = df_all['open']
+data = df_all.iloc[:, 2:]
+labels = target
+
+# Split data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(data.values, target.values, test_size=0.5, random_state=0)
+
+# Initialize Perceptron classifier
+clf = Perceptron()
+
+# Train the classifier
+clf.fit(X_train, y_train)
+
+# Predict labels for test set
+y_pred = clf.predict(X_test)
+
+# Print accuracy score
+print("Accuracy:", clf.score(X_test, y_test))
+
+# Print confusion matrix
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print("---------------------\n")
+
+# MLPClassifier
+
+# Split data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(data.values, target.values, test_size=0.5, random_state=0)
+
+# Initialize MLPClassifier with max_iter=550
+clf = MLPClassifier(max_iter=550)
+
+# Train the classifier
+clf.fit(X_train, y_train)
+
+# Predict labels for test set
+y_pred = clf.predict(X_test)
+
+# Print coefficients of the neural network
+print("Coefficients:", clf.coefs_)
+
+# Print number of layers
+print("Number of layers:", clf.n_layers_)
+
+# Print number of outputs
+print("Number of outputs:", clf.n_outputs_)
+
+# Print accuracy score
+print("Accuracy:", clf.score(X_test, y_test))
+
+# Print confusion matrix
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print("---------------------\n")
+
+#  MLPRegressor
+
+# Split data into train and test sets
+X_train, X_test, Y_train, Y_test = train_test_split(data.values, target.values, test_size=0.3)
+
+# Initialize MLPRegressor with max_iter=500
+rf = MLPRegressor(max_iter=500)
+
+# Train the regressor
+clf = rf.fit(X_train, Y_train)
+
+# Print R2 score
+print("R2 Score: {:.2f}".format(r2_score(Y_test, clf.predict(X_test))))
+
+# Print MAE (Mean Absolute Error)
+print("MAE: {:.2f}".format(mean_absolute_error(Y_test, clf.predict(X_test))))
+print("---------------------\n")
+
+# PCA
+target = df_all['open']
+data = df_all.iloc[:, 2:]
+labels = target
+
+# Standardize the data
+scaler = StandardScaler()
+scaler.fit(data)
+scaled_data = scaler.transform(data)
+
+# Perform PCA
+pca = PCA(n_components=2)
+pca.fit(scaled_data)
+x_pca = pca.transform(scaled_data)
+
+# Print shapes
+print("Shape of scaled data:", scaled_data.shape)
+print("Shape of PCA transformed data:", x_pca.shape)
+
+# Plot PCA components
+plt.figure(figsize=(8,6))
+plt.scatter(x_pca[:,0], x_pca[:,1], c=labels, cmap='prism')
+plt.xlabel('First Principal Component')
+plt.ylabel('Second Principal Component')
+plt.show()
+
+# Perform TruncatedSVD
+svd = TruncatedSVD(n_components=2)
+iris_transformed = svd.fit_transform(data)
+
+# Print original and transformed data
+print("Original data:")
+print(data)
+print("\nTransformed data:")
+print(iris_transformed)
