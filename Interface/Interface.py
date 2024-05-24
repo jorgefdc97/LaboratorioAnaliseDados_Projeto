@@ -25,31 +25,38 @@ class DataAnalysisLab:
         self.time_basis_var = tk.StringVar()
         self.prediction_size_var = tk.IntVar()
         self.test_size_var = tk.IntVar()
+        self.prediction_var = tk.StringVar()
 
         self.create_widgets()
 
     def create_widgets(self):
         # Frame for radio buttons
-        self.radio_frame = ttk.Frame(self.root, width=400, height=100, padding=40)
-        self.radio_frame.pack(side="top", anchor="nw")
+        self.main_frame = ttk.Frame(self.root, width=400, height=100, padding=40)
+        self.main_frame.pack(side="top", anchor="nw")
 
-        ttk.Label(self.radio_frame, text="Select the algorithm:", padding=20).pack()
+        ttk.Label(self.main_frame, text="Select the algorithm:", padding=20).pack()
 
         self.radio_button1 = ttk.Radiobutton(
-            self.radio_frame, text="Timeseries", variable=self.ml_algorithm_var, value="Timeseries",
+            self.main_frame, text="Timeseries", variable=self.ml_algorithm_var, value="Timeseries",
             command=self.radio_selection, padding=20
         )
         self.radio_button1.pack()
 
         self.radio_button2 = ttk.Radiobutton(
-            self.radio_frame, text=self.ML_ALGORITHM, variable=self.ml_algorithm_var, value=self.ML_ALGORITHM,
+            self.main_frame, text=self.ML_ALGORITHM, variable=self.ml_algorithm_var, value=self.ML_ALGORITHM,
             command=self.radio_selection, padding=20
         )
         self.radio_button2.pack()
 
+        ttk.Label(self.main_frame, text="Select the prediction's object:", padding=20).pack()
+        prediction_combobox = ttk.Combobox(self.main_frame, width=27, textvariable=self.prediction_var)
+        prediction_combobox['values'] = ('open', 'close', 'high', 'low')
+        prediction_combobox.pack()
+
+
         # Frame to fill with the algorithm options
-        self.main_frame = ttk.Frame(self.root, width=400, height=250, padding=40)
-        self.main_frame.pack(side="left", anchor="n")
+        self.optional_frame = ttk.Frame(self.root, width=400, height=250, padding=40)
+        self.optional_frame.pack(side="left", anchor="n")
 
         # Frame to fill with graph and title
         self.graph_frame = ttk.Frame(self.root, height=self.HEIGHT, padding=40)
@@ -70,23 +77,23 @@ class DataAnalysisLab:
 
     def timeseries_template(self):
         self.time_basis_template()
-        ttk.Label(self.main_frame, text="Select the size of prediction", padding=20).pack()
-        spinbox = ttk.Spinbox(self.main_frame, from_=0, to=100, textvariable=self.prediction_size_var)
+        ttk.Label(self.optional_frame, text="Select the size of prediction", padding=20).pack()
+        spinbox = ttk.Spinbox(self.optional_frame, from_=0, to=100, textvariable=self.prediction_size_var)
         spinbox.pack()
-        ttk.Button(self.main_frame, text="OK", command=self.select_options).pack(pady=20)
+        ttk.Button(self.optional_frame, text="OK", command=self.select_options).pack(pady=20)
 
     def algorithm_template(self):
         self.time_basis_template()
-        ttk.Label(self.main_frame, text="Select the test size (%)", padding=20).pack()
-        spinbox = ttk.Spinbox(self.main_frame, from_=0, to=50, textvariable=self.test_size_var)
+        ttk.Label(self.optional_frame, text="Select the test size (%)", padding=20).pack()
+        spinbox = ttk.Spinbox(self.optional_frame, from_=0, to=50, textvariable=self.test_size_var)
         spinbox.pack()
-        ttk.Button(self.main_frame, text="OK", command=self.select_options).pack(pady=20)
+        ttk.Button(self.optional_frame, text="OK", command=self.select_options).pack(pady=20)
 
     def time_basis_template(self):
         self.clear_main_frame()
-        ttk.Label(self.main_frame, text="Select the analysis time basis:", padding=20).pack()
+        ttk.Label(self.optional_frame, text="Select the analysis time basis (days)", padding=20).pack()
 
-        time_combobox = ttk.Combobox(self.main_frame, width=27, textvariable=self.time_basis_var)
+        time_combobox = ttk.Combobox(self.optional_frame, width=27, textvariable=self.time_basis_var)
         time_combobox['values'] = ('daily', 'weekly', 'monthly')
         time_combobox.pack()
 
@@ -122,12 +129,15 @@ class DataAnalysisLab:
                 #
 
     def clear_main_frame(self):
-        for widget in self.main_frame.winfo_children():
+        for widget in self.optional_frame.winfo_children():
             widget.destroy()
 
     def clear_graph_title(self):
         for widget in self.title_graph_frame.winfo_children():
             widget.destroy()
+
+
+
 
 
 if __name__ == "__main__":
