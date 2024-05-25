@@ -1,4 +1,3 @@
-from imblearn.over_sampling import SMOTE
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,16 +15,20 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPRegressor
 from sklearn.linear_model import Ridge, Lasso
 from sklearn.svm import SVC
+from imblearn.over_sampling import SMOTE
+
 
 # Define rating function
 def rating_function(open_position):
     return 1 if open_position >= 0 else 0
 
+
 # Read the dataset
 df = pd.read_csv("GOOG.US_D1_cleaned.csv")
 
 # Feature selection
-features = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'stoch_3_6_slowk', 'stochrsi_3_6_fastk', 'mom_3', 'willr_3', 'obv_0', 'bbands_3_upperband', 'bbands_3_lowerband', 'ema_3', 'sma_3']
+features = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'stoch_3_6_slowk', 'stochrsi_3_6_fastk', 'mom_3',
+            'willr_3', 'obv_0', 'bbands_3_upperband', 'bbands_3_lowerband', 'ema_3', 'sma_3']
 df_all = df[features].copy()
 df_all["open_close_diff"] = df_all["open"] - df["close"].shift(1)
 df_all.fillna(1, inplace=True)
@@ -202,7 +205,6 @@ print("Logistic Regression Classification Report with Balanced Class Weights:\n"
 y_pred_proba = log_reg.predict_proba(X_test)[:, 1]
 roc_auc = roc_auc_score(y_test, y_pred_proba)
 print(f"ROC-AUC Score: {roc_auc:.2f}")
-
 
 # Ridge Regression
 ridge = Ridge(alpha=1.0)
