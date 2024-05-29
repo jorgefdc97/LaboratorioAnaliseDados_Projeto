@@ -217,9 +217,11 @@ lasso.fit(X_train, Y_train)
 print("Lasso Regression Score:", lasso.score(X_test, Y_test))
 
 # SVM with different kernels
-kernels = ['linear', 'poly', 'rbf']
+kernels = ['poly','rbf', 'linear']
 for kernel in kernels:
+    print("inicio")
     svm = SVC(kernel=kernel)
-    svm.fit(X_train, y_train)
+    print(svm)
+    svm.fit(X_res, y_res)
     y_pred = svm.predict(X_test)
     print(f"SVM with {kernel} kernel Classification Report:\n", classification_report(y_test, y_pred))
