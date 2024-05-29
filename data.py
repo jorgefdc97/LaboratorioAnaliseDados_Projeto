@@ -12,9 +12,10 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPRegressor
-from sklearn.svm import SVC
+from sklearn.svm import SVR
 from imblearn.over_sampling import SMOTE
-
+from statsmodels.tsa.arima.model import ARIMA
+from datetime import datetime, timedelta
 
 def read_and_preprocess(file_path):
     df = pd.read_csv(file_path)
@@ -216,24 +217,77 @@ def lasso_regression(df):
     print("Lasso Regression Score:", lasso.score(X_test, Y_test))
 
 
-def svm_classification(df):
-    X = df.drop(columns=['open_close'])
-    Y = df['open_close']
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
-    smote = SMOTE(random_state=42)
-    X_res, y_res = smote.fit_resample(X_train, y_train)
-    kernels = ['poly', 'rbf', 'linear']
+def svm_regression(df):
+    X = df.drop(columns=['open'])
+    Y = df['open']
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+    kernels = ['poly', 'rbf']
     for kernel in kernels:
-        svm = SVC(kernel=kernel)
-        svm.fit(X_res, y_res)
+        svm = SVR(kernel=kernel)
+        svm.fit(X_train, Y_train)  # Fit SVM regression directly without SMOTE
         y_pred = svm.predict(X_test)
-        print(f"SVM with {kernel} kernel Classification Report:\n", classification_report(y_test, y_pred))
+        print(f"SVM with {kernel} kernel R2 Score:", r2_score(Y_test, y_pred))
+        print(f"SVM with {kernel} kernel MAE:", mean_absolute_error(Y_test, y_pred))
+
+def time_series_analysis(df):
+    # Select relevant columns for time series analysis
+    selected_columns = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'mom_3']
+    df_selected = df[selected_columns].copy()
+
+    # Plot time series for each selected column
+    for column in df_selected.columns:
+        plt.figure(figsize=(10, 6))
+        plt.plot(df_selected.index, df_selected[column])
+        plt.title(f'Time Series Analysis: {column}')
+        plt.xlabel('Line Number')
+        plt.ylabel(column.capitalize())
+        plt.grid(True)
+        plt.show()
+
+    # Statistical summary for each column
+    print("Statistical Summary:")
+    print(df_selected.describe())
+
+"""
+def predict_next_365_days(df):
+    # Select relevant column for time series analysis (e.g., 'close' price)
+    ts_column = 'close'
+    ts_data = df[ts_column]
+
+    # Train ARIMA model
+    model = ARIMA(ts_data, order=(5,1,0))  # Example ARIMA parameters, can be tuned
+    model_fit = model.fit()
+
+    # Forecast next 365 days
+    forecast = model_fit.forecast(steps=365)
+
+    # Generate date range for forecasted values
+    last_date = df.index[-1]
+    forecast_dates = [last_date + timedelta(days=i) for i in range(1, 366)]
+
+    # Create DataFrame for forecasted values
+    forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecast': forecast})
+
+    # Plot forecasted values
+    plt.figure(figsize=(10, 6))
+    plt.plot(df.index, df[ts_column], label='Historical Data')
+    plt.plot(forecast_df['Date'], forecast_df['Forecast'], label='Forecasted Data', linestyle='--')
+    plt.title('Forecast for Next 365 Days')
+    plt.xlabel('Date')
+    plt.ylabel('Close Price')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    return forecast_df
+"""
+
 
 
 def main():
     file_path = "GOOG.US_D1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
-
+    """
     # Descriptive statistics and EDA
     df_mean_3b = df_all.iloc[1545:1608]
     df_mean_3a = df_all.iloc[1609:1682]
@@ -255,8 +309,9 @@ def main():
     logistic_regression_with_class_weights(df_all)
     ridge_regression(df_all)
     lasso_regression(df_all)
-    svm_classification(df_all)
-
-
+    """
+    svm_regression(df_all)
+    time_series_analysis(df_all)
+    #predict_next_365_days(df_all)
 if __name__ == "__main__":
     main()
