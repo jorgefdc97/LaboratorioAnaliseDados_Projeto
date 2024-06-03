@@ -11,8 +11,8 @@ APPLICATION_NAME = "Data Analysis Lab"
 
 class DataAnalysisLab:
     def __init__(self, root):
-        self.WIDTH = 1280
-        self.HEIGHT = 680
+        self.WIDTH = 1500
+        self.HEIGHT = 780
         self.root = root
         self.root.title(APPLICATION_NAME)
         self.root.geometry(f"{self.WIDTH}x{self.HEIGHT}")
