@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 SCRIPT_PATH = os.path.dirname(__file__)
 APPLICATION_NAME = "Data Analysis Lab"
 
-
 class DataAnalysisLab:
     def __init__(self, root):
         self.WIDTH = 1500
@@ -135,9 +134,6 @@ class DataAnalysisLab:
     def clear_graph_title(self):
         for widget in self.title_graph_frame.winfo_children():
             widget.destroy()
-
-
-
 
 
 if __name__ == "__main__":
