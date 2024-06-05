@@ -84,9 +84,9 @@ def price_plot(df):
     plt.show()
 
 
-def linear_regression(df):
-    X = df.drop(columns=['open'])
-    Y = df['open']
+def linear_regression(df, columns):
+    X = df.drop(columns)
+    Y = df[columns]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     lr = LinearRegression()
     lr.fit(X_train, Y_train)
@@ -96,9 +96,9 @@ def linear_regression(df):
     print("R2 Score:", r2_score(Y_test, y_test_predict))
 
 
-def naive_bayes_classification(df):
-    X = df.drop(columns=['open_close'])
-    Y = df['open_close']
+def naive_bayes_classification(df, columns):
+    X = df.drop(columns)
+    Y = df[columns]
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     gnb = GaussianNB()
     y_pred = gnb.fit(X_train, y_train).predict(X_test)
@@ -148,9 +148,9 @@ def hierarchical_clustering(df):
     plt.show()
 
 
-def mlp_regressor(df):
-    X = df.drop(columns=['open'])
-    Y = df['open']
+def mlp_regressor(df, columns):
+    X = df.drop(columns)
+    Y = df[columns]
     X_train, X_test, Y_train, Y_test = train_test_split(X.values, Y.values, test_size=0.3, random_state=42)
     mlp = MLPRegressor(max_iter=500, random_state=42)
     mlp.fit(X_train, Y_train)
@@ -183,9 +183,9 @@ def truncated_svd_analysis(df):
     plt.show()
 
 
-def logistic_regression_with_class_weights(df):
-    X = df.drop(columns=['open_close'])
-    Y = df['open_close']
+def logistic_regression_with_class_weights(df, columns):
+    X = df.drop(columns)
+    Y = df[columns]
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     smote = SMOTE(random_state=42)
     X_res, y_res = smote.fit_resample(X_train, y_train)
@@ -199,27 +199,27 @@ def logistic_regression_with_class_weights(df):
     print(f"ROC-AUC Score: {roc_auc:.2f}")
 
 
-def ridge_regression(df):
-    X = df.drop(columns=['open'])
-    Y = df['open']
+def ridge_regression(df, columns):
+    X = df.drop(columns)
+    Y = df[columns]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     ridge = Ridge(alpha=1.0)
     ridge.fit(X_train, Y_train)
     print("Ridge Regression Score:", ridge.score(X_test, Y_test))
 
 
-def lasso_regression(df):
-    X = df.drop(columns=['open'])
-    Y = df['open']
+def lasso_regression(df, columns):
+    X = df.drop(columns)
+    Y = df[columns]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     lasso = Lasso(alpha=0.1)
     lasso.fit(X_train, Y_train)
     print("Lasso Regression Score:", lasso.score(X_test, Y_test))
 
 
-def svm_regression(df):
-    X = df.drop(columns=['open'])
-    Y = df['open']
+def svm_regression(df, columns):
+    X = df.drop(columns)
+    Y = df[columns]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     kernels = ['poly', 'rbf']
     for kernel in kernels:

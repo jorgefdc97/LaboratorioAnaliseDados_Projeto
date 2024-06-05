@@ -4,9 +4,13 @@ import os
 from PIL import Image, ImageTk
 import numpy as np
 import matplotlib.pyplot as plt
+import data as data_module
 
 SCRIPT_PATH = os.path.dirname(__file__)
 APPLICATION_NAME = "Data Analysis Lab"
+file_path = "GOOG.US_D1_cleaned.csv"
+df_all = data_module.read_and_preprocess(file_path)
+
 
 class DataAnalysisLab:
     def __init__(self, root):
@@ -106,6 +110,8 @@ class DataAnalysisLab:
                 ttk.Label(self.title_graph_frame,
                           text=f"Timeseries will be made for {self.prediction_size_var.get()} days "
                                "in a "f"{self.time_basis_var.get()} basis").pack(side="top")
+
+                data_module.mlp_regressor(df_all, self.prediction_var)
 
                 # -----------CALL SCRIPT TO GENERATE AND SHOW TIMESERIES HERE
                 #
