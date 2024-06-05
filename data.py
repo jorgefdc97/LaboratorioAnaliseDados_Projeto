@@ -224,7 +224,7 @@ def svm_regression(df):
     kernels = ['poly', 'rbf']
     for kernel in kernels:
         svm = SVR(kernel=kernel)
-        svm.fit(X_train, Y_train)  # Fit SVM regression directly without SMOTE
+        svm.fit(X_train, Y_train)
         y_pred = svm.predict(X_test)
         print(f"SVM with {kernel} kernel R2 Score:", r2_score(Y_test, y_pred))
         print(f"SVM with {kernel} kernel MAE:", mean_absolute_error(Y_test, y_pred))
@@ -248,7 +248,7 @@ def time_series_analysis(df):
     print("Statistical Summary:")
     print(df_selected.describe())
 
-"""
+
 def predict_next_365_days(df):
     # Select relevant column for time series analysis (e.g., 'close' price)
     ts_column = 'close'
@@ -280,13 +280,14 @@ def predict_next_365_days(df):
     plt.show()
 
     return forecast_df
-"""
+
 
 
 
 def main():
     file_path = "GOOG.US_D1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
+    """
     """
     # Descriptive statistics and EDA
     df_mean_3b = df_all.iloc[1545:1608]
@@ -309,6 +310,7 @@ def main():
     logistic_regression_with_class_weights(df_all)
     ridge_regression(df_all)
     lasso_regression(df_all)
+    """
     """
     svm_regression(df_all)
     time_series_analysis(df_all)
