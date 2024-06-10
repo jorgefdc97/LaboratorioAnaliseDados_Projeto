@@ -8,7 +8,7 @@ import data as data_module
 
 SCRIPT_PATH = os.path.dirname(__file__)
 APPLICATION_NAME = "Data Analysis Lab"
-file_path = "GOOG.US_D1_cleaned.csv"
+file_path = "../GOOG.US_D1_cleaned.csv"
 df_all = data_module.read_and_preprocess(file_path)
 
 

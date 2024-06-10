@@ -15,7 +15,9 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.svm import SVR
 from imblearn.over_sampling import SMOTE
 from statsmodels.tsa.arima.model import ARIMA
-from datetime import datetime, timedelta
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.stattools import adfuller, acf, pacf
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
 def read_and_preprocess(file_path):
     df = pd.read_csv(file_path)
@@ -217,9 +219,9 @@ def lasso_regression(df, columns):
     print("Lasso Regression Score:", lasso.score(X_test, Y_test))
 
 
-def svm_regression(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
+def svm_regression(df, toUse):
+    X = df.drop(columns=toUse)
+    Y = df[toUse]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     kernels = ['poly', 'rbf']
     for kernel in kernels:
@@ -229,57 +231,99 @@ def svm_regression(df, columns):
         print(f"SVM with {kernel} kernel R2 Score:", r2_score(Y_test, y_pred))
         print(f"SVM with {kernel} kernel MAE:", mean_absolute_error(Y_test, y_pred))
 
-def time_series_analysis(df):
-    # Select relevant columns for time series analysis
-    selected_columns = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'mom_3']
-    df_selected = df[selected_columns].copy()
 
-    # Plot time series for each selected column
-    for column in df_selected.columns:
-        plt.figure(figsize=(10, 6))
-        plt.plot(df_selected.index, df_selected[column])
-        plt.title(f'Time Series Analysis: {column}')
-        plt.xlabel('Line Number')
-        plt.ylabel(column.capitalize())
-        plt.grid(True)
+def plot_acf_pacf(series, lags=30):
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+    plot_acf(series, lags=lags, ax=axes[0])
+    plot_pacf(series, lags=lags, ax=axes[1])
+    plt.suptitle(f'ACF and PACF of {series.name}', fontsize=14)
+    plt.show()
+
+
+def check_stationarity(series):
+    result = adfuller(series.dropna())
+    print(f'ADF Statistic: {result[0]:.6f}')
+    print(f'p-value: {result[1]:.6f}')
+    for key, value in result[4].items():
+        print(f'Critical Value {key}: {value}')
+    return result[1] < 0.05
+
+
+def time_series_analysis(df_all):
+    selected_columns = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'mom_3']
+
+    # Set the index to be the row number (day index)
+    df_all.reset_index(drop=True, inplace=True)
+
+    # Plot the time series data
+    df_all[selected_columns].plot(subplots=True, figsize=(12, 10), title='Time Series Data')
+    plt.show()
+
+    # Decompose the time series for each column and plot
+    for column in selected_columns:
+        decomposition = seasonal_decompose(df_all[column], model='additive', period=365)
+        fig = decomposition.plot()
+        fig.suptitle(f'{column} Decomposition')
         plt.show()
 
-    # Statistical summary for each column
-    print("Statistical Summary:")
-    print(df_selected.describe())
+    # Autocorrelation and Partial Autocorrelation plots
+    for column in selected_columns:
+        plot_acf_pacf(df_all[column])
 
+    # Check for stationarity and apply differencing if necessary
+    if not check_stationarity(df_all['close']):
+        df_all['close_diff'] = df_all['close'].diff().dropna()
+        if not check_stationarity(df_all['close_diff']):
+            print("Data is still not stationary after differencing.")
+        else:
+            print("Data is stationary after differencing.")
+    else:
+        df_all['close_diff'] = df_all['close']
 
-def predict_next_365_days(df):
-    # Select relevant column for time series analysis (e.g., 'close' price)
-    ts_column = 'close'
-    ts_data = df[ts_column]
+    # Split the data into training and test sets
+    train_size = int(len(df_all) * 0.8)
+    train, test = df_all['close_diff'][:train_size], df_all['close_diff'][train_size:]
 
-    # Train ARIMA model
-    model = ARIMA(ts_data, order=(5,1,0))  # Example ARIMA parameters, can be tuned
+    # Fit the ARIMA model
+    model = ARIMA(train, order=(5, 1, 0))
     model_fit = model.fit()
+    print(model_fit.summary())
 
-    # Forecast next 365 days
-    forecast = model_fit.forecast(steps=365)
+    # Forecast
+    forecast_result = model_fit.get_forecast(steps=len(test))
+    forecast = forecast_result.predicted_mean
+    conf_int = forecast_result.conf_int()
 
-    # Generate date range for forecasted values
-    last_date = df.index[-1]
-    forecast_dates = [last_date + timedelta(days=i) for i in range(1, 366)]
+    # Reverse the differencing
+    last_observed = df_all['close'].iloc[train_size - 1]
+    forecast_cumsum = forecast.cumsum()
+    forecast_original = last_observed + forecast_cumsum
 
-    # Create DataFrame for forecasted values
-    forecast_df = pd.DataFrame({'Date': forecast_dates, 'Forecast': forecast})
-
-    # Plot forecasted values
-    plt.figure(figsize=(10, 6))
-    plt.plot(df.index, df[ts_column], label='Historical Data')
-    plt.plot(forecast_df['Date'], forecast_df['Forecast'], label='Forecasted Data', linestyle='--')
-    plt.title('Forecast for Next 365 Days')
-    plt.xlabel('Date')
+    plt.figure(figsize=(10, 4))
+    plt.plot(df_all['close'], label='Observed')
+    plt.plot(range(train_size, train_size + len(test)), forecast_original, label='Forecast', color='red')
+    plt.fill_between(range(train_size, train_size + len(test)),
+                     last_observed + conf_int.iloc[:, 0].cumsum(),
+                     last_observed + conf_int.iloc[:, 1].cumsum(), color='red', alpha=0.2)
+    plt.title('Close Price Forecast')
+    plt.xlabel('Day')
     plt.ylabel('Close Price')
     plt.legend()
     plt.grid(True)
     plt.show()
 
-    return forecast_df
+    # Check residuals
+    residuals = model_fit.resid
+    plt.figure(figsize=(10, 4))
+    plt.plot(residuals)
+    plt.title('Residuals')
+    plt.show()
+    fig, axes = plt.subplots(1, 2, figsize=(15, 4))
+    axes[0].stem(acf(residuals))
+    axes[0].set_title('ACF of Residuals')
+    axes[1].stem(pacf(residuals))
+    axes[1].set_title('PACF of Residuals')
+    plt.show()
 
 
 
@@ -288,7 +332,7 @@ def main():
     file_path = "GOOG.US_D1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
     """
-    """
+    ""
     # Descriptive statistics and EDA
     df_mean_3b = df_all.iloc[1545:1608]
     df_mean_3a = df_all.iloc[1609:1682]
@@ -300,20 +344,19 @@ def main():
     price_plot(df_all)
 
     # Model fitting and evaluation
-    linear_regression(df_all)
-    naive_bayes_classification(df_all)
+    linear_regression(df_all, 'open')
+    naive_bayes_classification(df_all, 'open')
     kmeans_clustering(df_all)
     hierarchical_clustering(df_all)
-    mlp_regressor(df_all)
+    mlp_regressor(df_all,'open')
     pca_analysis(df_all)
     truncated_svd_analysis(df_all)
-    logistic_regression_with_class_weights(df_all)
-    ridge_regression(df_all)
-    lasso_regression(df_all)
+    logistic_regression_with_class_weights(df_all,'open')
+    ridge_regression(df_all,'open')
+    lasso_regression(df_all,'open')
+    ""
     """
-    """
-    svm_regression(df_all)
+    #svm_regression(df_all,'open')
     time_series_analysis(df_all)
-    #predict_next_365_days(df_all)
 if __name__ == "__main__":
     main()
