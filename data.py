@@ -321,6 +321,7 @@ def time_series_analysis(df_all):
     plt.grid(True)
     plt.show()
 
+
     # Check residuals
     residuals = model_fit.resid
     plt.figure(figsize=(10, 4))
@@ -337,7 +338,7 @@ def time_series_analysis(df_all):
 
 
 def main():
-    file_path = "GOOG.US_D1_cleaned.csv"
+    file_path = "Resources/GOOG.US_D1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
     """
     ""

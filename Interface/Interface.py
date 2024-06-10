@@ -8,9 +8,9 @@ import data as data_module
 
 SCRIPT_PATH = os.path.dirname(__file__)
 APPLICATION_NAME = "Data Analysis Lab"
-DAILY_CSV_PATH = "../GOOG.US_D1_cleaned.csv"
-WEEKLY_CSV_PATH = "../GOOG.US_D1_cleaned.csv" #ALTERAR PARA PATH CSV WEEKLY
-MONTHLY_CSV_PATH = "../GOOG.US_D1_cleaned.csv" #ALTERAR PARA PATH CSV MONTHLY
+DAILY_CSV_PATH = "../Resources/GOOG.US_D1_cleaned.csv"
+WEEKLY_CSV_PATH = "../Resources/GOOG.US_W1_cleaned.csv"
+MONTHLY_CSV_PATH = "../Resources/GOOG.US_MN1_cleaned.csv"
 
 class DataAnalysisLab:
     def __init__(self, root):
