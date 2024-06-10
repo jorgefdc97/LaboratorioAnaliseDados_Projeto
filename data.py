@@ -19,10 +19,13 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.stattools import adfuller, acf, pacf
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
+
 def read_and_preprocess(file_path):
     df = pd.read_csv(file_path)
+
     features = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'stoch_3_6_slowk', 'stochrsi_3_6_fastk', 'mom_3',
                 'willr_3', 'obv_0', 'bbands_3_upperband', 'bbands_3_lowerband', 'ema_3', 'sma_3']
+
     df_all = df[features].copy()
     df_all["open_close_diff"] = df_all["open"] - df["close"].shift(1)
     df_all.fillna(1, inplace=True)
@@ -86,10 +89,10 @@ def price_plot(df):
     plt.show()
 
 
-def linear_regression(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+def linear_regression(df, column, test):
+    X = df.drop(columns=[column])
+    Y = df[column]
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test, random_state=42)
     lr = LinearRegression()
     lr.fit(X_train, Y_train)
     print("Linear Regression Score:", lr.score(X_test, Y_test))
@@ -98,10 +101,10 @@ def linear_regression(df, columns):
     print("R2 Score:", r2_score(Y_test, y_test_predict))
 
 
-def naive_bayes_classification(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+def naive_bayes_classification(df, column, test):
+    X = df.drop(columns=[column])
+    Y = df[column]
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test, random_state=42)
     gnb = GaussianNB()
     y_pred = gnb.fit(X_train, y_train).predict(X_test)
     print("Classification Report:\n", classification_report(y_test, y_pred))
@@ -150,10 +153,10 @@ def hierarchical_clustering(df):
     plt.show()
 
 
-def mlp_regressor(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
-    X_train, X_test, Y_train, Y_test = train_test_split(X.values, Y.values, test_size=0.3, random_state=42)
+def mlp_regressor(df, column, test):
+    X = df.drop(columns=[column])
+    Y = df[column]
+    X_train, X_test, Y_train, Y_test = train_test_split(X.values, Y.values, test_size=test, random_state=42)
     mlp = MLPRegressor(max_iter=500, random_state=42)
     mlp.fit(X_train, Y_train)
     print("MLPRegressor R2 Score:", r2_score(Y_test, mlp.predict(X_test)))
@@ -185,10 +188,10 @@ def truncated_svd_analysis(df):
     plt.show()
 
 
-def logistic_regression_with_class_weights(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+def logistic_regression_with_class_weights(df, column, test):
+    X = df.drop(columns=[column])
+    Y = df[column]
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test, random_state=42)
     smote = SMOTE(random_state=42)
     X_res, y_res = smote.fit_resample(X_train, y_train)
     log_reg = LogisticRegression(max_iter=200, class_weight='balanced')
@@ -201,28 +204,28 @@ def logistic_regression_with_class_weights(df, columns):
     print(f"ROC-AUC Score: {roc_auc:.2f}")
 
 
-def ridge_regression(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+def ridge_regression(df, column, test):
+    X = df.drop(columns=[column])
+    Y = df[column]
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test, random_state=42)
     ridge = Ridge(alpha=1.0)
     ridge.fit(X_train, Y_train)
     print("Ridge Regression Score:", ridge.score(X_test, Y_test))
 
 
-def lasso_regression(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+def lasso_regression(df, column, test):
+    X = df.drop(columns=[column])
+    Y = df[column]
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test, random_state=42)
     lasso = Lasso(alpha=0.1)
     lasso.fit(X_train, Y_train)
     print("Lasso Regression Score:", lasso.score(X_test, Y_test))
 
 
-def svm_regression(df, toUse):
-    X = df.drop(columns=toUse)
-    Y = df[toUse]
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
+def svm_regression(df, column, test):
+    X = df.drop(columns=[column])
+    Y = df[column]
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test, random_state=42)
     kernels = ['poly', 'rbf']
     for kernel in kernels:
         svm = SVR(kernel=kernel)
@@ -230,6 +233,12 @@ def svm_regression(df, toUse):
         y_pred = svm.predict(X_test)
         print(f"SVM with {kernel} kernel R2 Score:", r2_score(Y_test, y_pred))
         print(f"SVM with {kernel} kernel MAE:", mean_absolute_error(Y_test, y_pred))
+
+
+def time_series_analysis(df):
+    # Select relevant columns for time series analysis
+    selected_columns = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'mom_3']
+    df_selected = df[selected_columns].copy()
 
 
 def plot_acf_pacf(series, lags=30):
@@ -327,7 +336,6 @@ def time_series_analysis(df_all):
 
 
 
-
 def main():
     file_path = "GOOG.US_D1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
@@ -358,5 +366,7 @@ def main():
     """
     #svm_regression(df_all,'open')
     time_series_analysis(df_all)
+
+    
 if __name__ == "__main__":
     main()
