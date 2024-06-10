@@ -87,6 +87,7 @@ class DataAnalysisLab:
         else:
             print("Algorithm selected!")
             self.algorithm_template()
+            self.prediction_size_var.set(0)
 
     def prediction_object_selection(self):
         ttk.Label(self.optional_frame, text="Select the prediction's object:", padding=20).pack()
@@ -123,7 +124,8 @@ class DataAnalysisLab:
         print(f"Prediction Size: {self.prediction_size_var.get()}")
         print(f"Test Size: {self.test_size_var.get()}")
         self.clear_graph_title()
-        if self.time_basis_var.get() != "" and (self.prediction_size_var.get() != 0 or self.test_size_var != 0):
+        if (self.time_basis_var.get() != "" and self.prediction_var.get() != ""
+                and (self.prediction_size_var.get() != 0 or self.test_size_var.get() != 0)):
             if self.time_basis_var.get() == "daily":
                 file_path = DAILY_CSV_PATH
             elif self.time_basis_var.get() == "weekly":
