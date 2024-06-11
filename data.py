@@ -21,6 +21,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 import pickle
 from statsmodels.tsa.statespace.sarimax import SARIMAXResults
 
+
 def read_and_preprocess(file_path):
     df = pd.read_csv(file_path)
 
@@ -246,104 +247,19 @@ def time_series_analysis(df):
     # Select relevant columns for time series analysis
     selected_columns = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'mom_3']
     df_selected = df[selected_columns].copy()
-
-
-def plot_acf_pacf(series, lags=30):
-    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
-    plot_acf(series, lags=lags, ax=axes[0])
-    plot_pacf(series, lags=lags, ax=axes[1])
-    plt.suptitle(f'ACF and PACF of {series.name}', fontsize=14)
-    plt.show()
-
-
-def check_stationarity(series):
-    result = adfuller(series.dropna())
-    print(f'ADF Statistic: {result[0]:.6f}')
-    print(f'p-value: {result[1]:.6f}')
-    for key, value in result[4].items():
-        print(f'Critical Value {key}: {value}')
-    return result[1] < 0.05
-
-
-def time_series_analysis(df_all):
-    selected_columns = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'mom_3']
-
-    # Set the index to be the row number (day index)
-    df_all.reset_index(drop=True, inplace=True)
-
-    # Plot the time series data
-    df_all[selected_columns].plot(subplots=True, figsize=(12, 10), title='Time Series Data')
-    plt.show()
-
-    # Decompose the time series for each column and plot
-    for column in selected_columns:
-        decomposition = seasonal_decompose(df_all[column], model='additive', period=365)
-        fig = decomposition.plot()
-        fig.suptitle(f'{column} Decomposition')
-        plt.show()
-
-    # Autocorrelation and Partial Autocorrelation plots
-    for column in selected_columns:
-        plot_acf_pacf(df_all[column])
-
-    # Check for stationarity and apply differencing if necessary
-    if not check_stationarity(df_all['close']):
-        df_all['close_diff'] = df_all['close'].diff().dropna()
-        if not check_stationarity(df_all['close_diff']):
-            print("Data is still not stationary after differencing.")
-        else:
-            print("Data is stationary after differencing.")
-    else:
-        df_all['close_diff'] = df_all['close']
-
-    # Split the data into training and test sets
-    train_size = int(len(df_all) * 0.8)
-    train, test = df_all['close_diff'][:train_size], df_all['close_diff'][train_size:]
-
-    # Fit the ARIMA model
-    model = ARIMA(train, order=(5, 1, 0))
-    model_fit = model.fit()
-    print(model_fit.summary())
-
-    # Forecast
-    forecast_result = model_fit.get_forecast(steps=len(test))
-    forecast = forecast_result.predicted_mean
-    conf_int = forecast_result.conf_int()
-
-    # Reverse the differencing
-    last_observed = df_all['close'].iloc[train_size - 1]
-    forecast_cumsum = forecast.cumsum()
-    forecast_original = last_observed + forecast_cumsum
-
-    plt.figure(figsize=(10, 4))
-    plt.plot(df_all['close'], label='Observed')
-    plt.plot(range(train_size, train_size + len(test)), forecast_original, label='Forecast', color='red')
-    plt.fill_between(range(train_size, train_size + len(test)),
-                     last_observed + conf_int.iloc[:, 0].cumsum(),
-                     last_observed + conf_int.iloc[:, 1].cumsum(), color='red', alpha=0.2)
-    plt.title('Close Price Forecast')
-    plt.xlabel('Day')
-    plt.ylabel('Close Price')
-    plt.legend()
-    plt.grid(True)
-    #plt.show()
-    plt.savefig('Graphs/timeseries_forecast.png')
-
-
-    # Check residuals
-    residuals = model_fit.resid
-    plt.figure(figsize=(10, 4))
+def plot_residuals(model_path):
+    # Plot residuals
+    with open(model_path, 'rb') as file:
+        model = pickle.load(file)
+    residuals = model.resid
+    plt.figure(figsize=(10, 6))
     plt.plot(residuals)
-    plt.title('Residuals')
+    plt.title('Residuals of the SARIMA Model')
     plt.show()
-
-    fig, axes = plt.subplots(1, 2, figsize=(15, 4))
-    axes[0].stem(acf(residuals))
-    axes[0].set_title('ACF of Residuals')
-    axes[1].stem(pacf(residuals))
-    axes[1].set_title('PACF of Residuals')
+    # ACF and PACF of residuals
+    plot_acf(residuals, lags=50)
+    plot_pacf(residuals, lags=50)
     plt.show()
-
 
 def forecast(model_path, period, data_frequency='D'):
     # Load the SARIMA model from the specified path
@@ -367,7 +283,6 @@ def forecast(model_path, period, data_frequency='D'):
     # Return the mean of the forecasted values
     forecast_mean_value = np.mean(forecast_mean)
     return forecast_mean_value
-
 def main():
     file_path = "Resources/GOOG.US_D1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
@@ -383,19 +298,17 @@ def main():
     histogram(df_all)
     line_plots(df_all)
     price_plot(df_all)
-
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
+    kmeans_clustering(df_all)
+    hierarchical_clustering(df_all)
+    pca_analysis(df_all)
+    truncated_svd_analysis(df_all)
+    svm_regression(df_all,'open')
     ""
     """
-    kmeans_clustering(df_all)
-    #hierarchical_clustering(df_all)
-    #pca_analysis(df_all)
-    #truncated_svd_analysis(df_all)
-
-    #svm_regression(df_all,'open')
-    #time_series_analysis(df_all)
     model_path = 'sarima_weekly_model.pkl'
-    weekly_forecast_mean = forecast(model_path, period=12, data_frequency='W')
+    weekly_forecast_mean = forecast(model_path, period=12, data_frequency='Week')
+
 if __name__ == "__main__":
     main()
