@@ -241,11 +241,6 @@ def svm_regression(df, column, test):
         print(f"SVM with {kernel} kernel R2 Score:", r2_score(Y_test, y_pred))
         print(f"SVM with {kernel} kernel MAE:", mean_absolute_error(Y_test, y_pred))
 
-
-def time_series_analysis(df):
-    # Select relevant columns for time series analysis
-    selected_columns = ['open', 'high', 'low', 'close', 'volume', 'rsi_3', 'mom_3']
-    df_selected = df[selected_columns].copy()
 def plot_residuals(model_path):
     # Plot residuals
     with open(model_path, 'rb') as file:
