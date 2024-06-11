@@ -17,7 +17,7 @@ def read_and_preprocess(file_path):
     df_all["open_close"] = df_all["open_close_diff"].apply(lambda x: 1 if x >= 0 else 0)
     return df_all
 
-file_path = '../../Downloads/LaboratorioAnaliseDados_Projeto-tiago-f2/LaboratorioAnaliseDados_Projeto-tiago-f2/Resources/GOOG.US_W1_cleaned.csv'
+file_path = '../../Downloads/LaboratorioAnaliseDados_Projeto-tiago-f2/LaboratorioAnaliseDados_Projeto-tiago-f2/Resources/GOOG.US_MN1_cleaned.csv'
 data = read_and_preprocess(file_path)
 
 # Create a time series using the row number instead of the datetime column
@@ -27,7 +27,7 @@ data['day_of_year'] = data.index + 1
 time_series_data = data[['day_of_year', 'close']]
 
 # Decompose the time series
-decomposition = seasonal_decompose(time_series_data['close'], model='multiplicative', period=52)
+decomposition = seasonal_decompose(time_series_data['close'], model='multiplicative', period=12)
 
 # Plot the decomposed components
 decomposition.plot()
@@ -100,7 +100,7 @@ plt.grid(True)
 plt.show()
 
 # Define and fit the SARIMA model
-sarima_model = SARIMAX(train_data['close'], order=(5, 1, 0), seasonal_order=(1, 1, 1, 52))  # SARIMA(p,d,q)(P,D,Q,s)
+sarima_model = SARIMAX(train_data['close'], order=(5, 1, 0), seasonal_order=(1, 1, 1, 12))  # SARIMA(p,d,q)(P,D,Q,s)
 sarima_result = sarima_model.fit()
 
 # Forecast the next 30 days on the test set

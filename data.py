@@ -112,7 +112,7 @@ def naive_bayes_classification(df, column, test):
     print("Classification Report:\n", classification_report(y_test, y_pred))
     cm = confusion_matrix(y_test, y_pred)
     ConfusionMatrixDisplay(cm).plot()
-    plt.savefig('Graphs/naive_bayes_confusion_matrix.png')
+    plt.savefig('Graphs/confusion_matrix_monthly.png')
     plt.show()
     scores = cross_val_score(gnb, X, Y, cv=5)
     print("Cross-validation scores:", scores)
@@ -229,17 +229,36 @@ def lasso_regression(df, column, test):
     print("Lasso Regression Score:", lasso.score(X_test, Y_test))
 
 
-def svm_regression(df, column, test):
+def svm_regression(df, column, test, save_path):
     X = df.drop(columns=[column])
     Y = df[column]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test, random_state=42)
     kernels = ['poly', 'rbf']
-    for kernel in kernels:
+
+    plt.figure(figsize=(14, 6))
+
+    for i, kernel in enumerate(kernels, start=1):
         svm = SVR(kernel=kernel)
         svm.fit(X_train, Y_train)
         y_pred = svm.predict(X_test)
+
         print(f"SVM with {kernel} kernel R2 Score:", r2_score(Y_test, y_pred))
         print(f"SVM with {kernel} kernel MAE:", mean_absolute_error(Y_test, y_pred))
+
+        # Plotting the predictions
+        plt.subplot(1, 2, i)
+        plt.scatter(Y_test.index, Y_test, color='blue', label='Actual Values')
+        plt.scatter(Y_test.index, y_pred, color='red', label='Predicted Values')
+        plt.title(f"SVM with {kernel} kernel")
+        plt.xlabel('Day of the year')
+        plt.ylabel('Values')
+        plt.legend()
+        plt.grid(True)
+
+    plt.tight_layout()
+
+    plt.savefig(save_path)
+    #plt.show()
 
 def plot_residuals(model_path):
     # Plot residuals
@@ -255,7 +274,7 @@ def plot_residuals(model_path):
     plot_pacf(residuals, lags=50)
     plt.show()
 
-def forecast(model_path, period, data_frequency='D'):
+def forecast(model_path, period, data_frequency='Days'):
     # Load the SARIMA model from the specified path
     with open(model_path, 'rb') as file:
         model = pickle.load(file)
@@ -274,21 +293,15 @@ def forecast(model_path, period, data_frequency='D'):
     plt.grid(True)
 
     plt.savefig('Graphs/timeseries_forecast.png')
-    plt.show()
-
-    # Check residuals
-    residuals = model_fit.resid
-    plt.figure(figsize=(10, 4))
-    plt.plot(residuals)
-    plt.title('Residuals')
 
     plt.show()
 
     # Return the mean of the forecasted values
     forecast_mean_value = np.mean(forecast_mean)
     return forecast_mean_value
+
 def main():
-    file_path = "Resources/GOOG.US_D1_cleaned.csv"
+    file_path = "Resources/GOOG.US_MN1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
 
     """
@@ -312,9 +325,10 @@ def main():
     svm_regression(df_all,'open')
     ""
     """
-
-    model_path = 'sarima_weekly_model.pkl'
-    weekly_forecast_mean = forecast(model_path, period=12, data_frequency='Week')
+    naive_bayes_classification(df_all, 'open_close', 0.3)
+    #svm_regression(df_all, 'open', 0.3)
+    #model_path = 'sarima_weekly_model.pkl'
+    #weekly_forecast_mean = forecast(model_path, period=12, data_frequency='Week')
 
 
 if __name__ == "__main__":

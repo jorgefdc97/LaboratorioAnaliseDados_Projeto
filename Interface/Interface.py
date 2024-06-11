@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 import ttkbootstrap as ttk
 import os
@@ -22,7 +23,7 @@ class DataAnalysisLab:
         self.root.geometry(f"{self.WIDTH}x{self.HEIGHT}")
         self.root.iconbitmap("")  # Add path to icon file if available
 
-        self.ML_ALGORITHM = "Algorithm"
+        self.ML_ALGORITHM = "Support Vector Machine (SVR)"
         self.ml_algorithm_var = tk.StringVar(root)
 
         # Variables to store the selected values
@@ -64,64 +65,70 @@ class DataAnalysisLab:
 
         # Frame to fill with graph and title
         self.graph_frame = ttk.Frame(self.tab1, padding=60)
-        self.graph_frame.pack(side="left")
+        self.graph_frame.pack()
         self.title_graph_frame = ttk.Frame(self.graph_frame, height=15, padding=40)
         self.title_graph_frame.pack()
-        self.graph_prediction_frame = ttk.Frame(self.graph_frame, height=self.HEIGHT)
+        self.graph_prediction_frame = ttk.Frame(self.graph_frame)
         self.graph_prediction_frame.pack()
 
 
         self.tab2 = ttk.Frame(self.notebook)
-        ttk.Label(self.tab2, text="Confusion Matrix", font=("Verdana", 20)).pack()
-
+        ttk.Label(self.tab2, text="Confusion Matrix", font=("Verdana", 20), padding=20).pack()
+        self.naive_frame_superior = ttk.Frame(self.tab2, padding=0)
+        self.naive_frame_inferior = ttk.Frame(self.tab2, padding=0)
+        self.naive_frame_superior.pack()
+        self.naive_frame_inferior.pack()
+        self.generate_graph(self.naive_frame_superior, "confusion_matrix_daily.png", False)
+        self.generate_graph(self.naive_frame_superior, "confusion_matrix_weekly.png", False)
+        self.generate_graph(self.naive_frame_inferior, "confusion_matrix_monthly.png", False)
 
         self.tab3 = ttk.Frame(self.notebook)
         ttk.Label(self.tab3, text="K-Means", font=("Verdana", 20)).pack(pady=20)
         self.kmeans_frame = ttk.Frame(self.tab3, padding=80)
         self.kmeans_frame.pack()
-        self.generate_graph(self.kmeans_frame, "kmeans_elbow.png")
-        self.generate_graph(self.kmeans_frame, "kmeans_cluster.png")
+        self.generate_graph(self.kmeans_frame, "kmeans_elbow.png", True)
+        self.generate_graph(self.kmeans_frame, "kmeans_cluster.png", True)
 
 
         self.tab4 = ttk.Frame(self.notebook)
         ttk.Label(self.tab4, text="Principal Component Analysis (PCA)", font=("Verdana", 20)).pack()
         self.pca_frame = ttk.Frame(self.tab4, padding=80)
         self.pca_frame.pack()
-        self.generate_graph(self.pca_frame, "pca.png")
+        self.generate_graph(self.pca_frame, "pca.png", False)
 
 
         self.tab5 = ttk.Frame(self.notebook)
         ttk.Label(self.tab5, text="Singular Value Decomposition (SVD)", font=("Verdana", 20)).pack(pady=20)
-        self.svd_frame = ttk.Frame(self.tab3, padding=80)
+        self.svd_frame = ttk.Frame(self.tab5, padding=80)
         self.svd_frame.pack()
-        self.generate_graph(self.svd_frame, "svd.png")
+        self.generate_graph(self.svd_frame, "svd.png", False)
 
         self.tab6 = ttk.Frame(self.notebook)
         ttk.Label(self.tab6, text="Autoregressive Integrated Moving Average (ARIMA)", font=("Verdana", 20)).pack(pady=20)
-        self.arima_frame_superior = ttk.Frame(self.tab3, padding=80)
+        self.arima_frame_superior = ttk.Frame(self.tab6, padding=0)
+        self.arima_frame_inferior = ttk.Frame(self.tab6, padding=0)
         self.arima_frame_superior.pack()
-        self.arima_frame_inferior = ttk.Frame(self.tab3, padding=80)
         self.arima_frame_inferior.pack()
-        self.generate_graph(self.arima_frame_superior, "arima_day.png")
-        self.generate_graph(self.arima_frame_superior, "arima_week.png")
-        self.generate_graph(self.arima_frame_inferior, "arima_month.png")
+        self.generate_graph(self.arima_frame_superior, "arima_day.png", True)
+        self.generate_graph(self.arima_frame_superior, "arima_week.png", True)
+        self.generate_graph(self.arima_frame_inferior, "arima_month.png", True)
 
 
         self.tab7 = ttk.Frame(self.notebook)
         ttk.Label(self.tab7, text="Seasonal Autoregressive Integrated Moving Average (SARIMA)", font=("Verdana", 20)).pack(pady=20)
-        self.sarima_frame_superior = ttk.Frame(self.tab3, padding=80)
+        self.sarima_frame_superior = ttk.Frame(self.tab7)
         self.sarima_frame_superior.pack()
-        self.sarima_frame_inferior = ttk.Frame(self.tab3, padding=80)
+        self.sarima_frame_inferior = ttk.Frame(self.tab7)
         self.sarima_frame_inferior.pack()
-        self.generate_graph(self.sarima_frame_superior, "sarima_week.png")
-        self.generate_graph(self.sarima_frame_superior, "sarima_month.png")
+        self.generate_graph(self.sarima_frame_superior, "sarima_week.png", True)
+        self.generate_graph(self.sarima_frame_superior, "sarima_month.png", True)
         #self.generate_graph(self.sarima_frame_inferior, "sarima2.png")
 
         self.tab8 = ttk.Frame(self.notebook)
         ttk.Label(self.tab8, text="Hierarchical Clustering", font=("Verdana", 20)).pack(pady=20)
         self.hclustering_frame = ttk.Frame(self.tab8, padding=80)
         self.hclustering_frame.pack()
-        self.generate_graph(self.hclustering_frame, "hierarchical_clustering.png")
+        self.generate_graph(self.hclustering_frame, "hierarchical_clustering.png", False)
 
 
         self.notebook.add(self.tab1, text='Prediction')
@@ -178,7 +185,7 @@ class DataAnalysisLab:
         print(f"Time Basis: {self.time_basis_var.get()}")
         print(f"Prediction Size: {self.prediction_size_var.get()}")
         print(f"Test Size: {self.test_size_var.get()}")
-        self.clear_graph_title()
+        self.clear_graph_frame()
         if (self.time_basis_var.get() != "" and self.prediction_var.get() != ""
                 and (self.prediction_size_var.get() != 0 or self.test_size_var.get() != 0)):
             if self.time_basis_var.get() == "daily":
@@ -203,21 +210,29 @@ class DataAnalysisLab:
                 data_module.forecast(model_path, self.prediction_size_var.get(), data_frequency)
             else:
                 df_all = data_module.read_and_preprocess(file_path)
-                ttk.Label(self.title_graph_frame, text=f"{self.ML_ALGORITHM} will be made with "
+                ttk.Label(self.title_graph_frame, text=f"{self.ML_ALGORITHM} prevision will be made with "
                                                        f"{self.test_size_var.get()}% test"
-                                                       " with a "f"{self.time_basis_var.get()} basis").pack(side="top")
+                                                       " in a "f"{self.time_basis_var.get()} basis").pack(side="top")
 
                 test_size = self.test_size_var.get() / 100
-                data_module.mlp_regressor(df_all, self.prediction_var.get(), test_size)
+                print(test_size)
+                data_module.svm_regression(df_all, self.prediction_var.get(), test_size, "../Graphs/prediction.png")
+                self.generate_graph(self.graph_prediction_frame, "prediction.png", True)
 
-    def generate_graph(self, tab, graph_path):
+
+    def generate_graph(self, tab, graph_path, resize):
         path = os.path.join("../Graphs", graph_path)
+        print(path)
         try:
             image = Image.open(path)
-            photo = ImageTk.PhotoImage(image)
+            if(resize):
+                image2 = image.resize((900, 450))
+            else:
+                image2 = image
+            photo = ImageTk.PhotoImage(image2)
             label = tk.Label(tab, image=photo)
             label.image = photo  # Keep a reference to avoid garbage collection
-            label.pack(side="left", pady=80)
+            label.pack(side="left")
         except Exception as e:
             print(f"Error loading graph image: {e}")
 
@@ -225,10 +240,11 @@ class DataAnalysisLab:
         for widget in self.optional_frame.winfo_children():
             widget.destroy()
 
-    def clear_graph_title(self):
+    def clear_graph_frame(self):
         for widget in self.title_graph_frame.winfo_children():
             widget.destroy()
-
+        for widget in self.graph_prediction_frame.winfo_children():
+            widget.destroy()
 
 if __name__ == "__main__":
     root = ttk.Window(themename="darkly")
