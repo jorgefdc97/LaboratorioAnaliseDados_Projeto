@@ -354,7 +354,7 @@ def main():
 
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
-    naive_bayes_classification(df_all, 'open')
+    
     kmeans_clustering(df_all)
     hierarchical_clustering(df_all)
     mlp_regressor(df_all,'open')
@@ -363,11 +363,13 @@ def main():
     logistic_regression_with_class_weights(df_all,'open')
     ridge_regression(df_all,'open')
     lasso_regression(df_all,'open')
+    svm_regression(df_all,'open')
+    time_series_analysis(df_all)
     ""
     """
     #svm_regression(df_all,'open')
     time_series_analysis(df_all)
 
-    
+   
 if __name__ == "__main__":
     main()
