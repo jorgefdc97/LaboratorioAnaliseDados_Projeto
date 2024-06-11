@@ -18,7 +18,8 @@ from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.stattools import adfuller, acf, pacf
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-
+import pickle
+from statsmodels.tsa.statespace.sarimax import SARIMAXResults
 
 def read_and_preprocess(file_path):
     df = pd.read_csv(file_path)
@@ -336,6 +337,28 @@ def time_series_analysis(df_all):
     plt.show()
 
 
+def forecast(model_path, period, data_frequency='D'):
+    # Load the SARIMA model from the specified path
+    with open(model_path, 'rb') as file:
+        model = pickle.load(file)
+
+    # Perform the forecast for the specified period
+    forecast_result = model.get_forecast(steps=period)
+    forecast_mean = forecast_result.predicted_mean
+
+    # Plot the forecasted data
+    plt.figure(figsize=(12, 6))
+    plt.plot(forecast_mean.index, forecast_mean, label='Forecasted Values', color='red')
+    plt.title(f'Forecasted Values for {period} {data_frequency}')
+    plt.xlabel('Time')
+    plt.ylabel('Forecasted Value')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    # Return the mean of the forecasted values
+    forecast_mean_value = np.mean(forecast_mean)
+    return forecast_mean_value
 
 def main():
     file_path = "Resources/GOOG.US_D1_cleaned.csv"
@@ -354,7 +377,6 @@ def main():
 
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
-    
     kmeans_clustering(df_all)
     hierarchical_clustering(df_all)
     mlp_regressor(df_all,'open')
@@ -368,8 +390,8 @@ def main():
     ""
     """
     #svm_regression(df_all,'open')
-    time_series_analysis(df_all)
-
-   
+    #time_series_analysis(df_all)
+    model_path = 'sarima_weekly_model.pkl'
+    weekly_forecast_mean = forecast(model_path, period=12, data_frequency='W')
 if __name__ == "__main__":
     main()
