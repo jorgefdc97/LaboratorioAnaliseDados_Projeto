@@ -98,9 +98,9 @@ def linear_regression(df, columns):
     print("R2 Score:", r2_score(Y_test, y_test_predict))
 
 
-def naive_bayes_classification(df, columns):
-    X = df.drop(columns)
-    Y = df[columns]
+def naive_bayes_classification(df, toUse):
+    X = df.drop(columns=toUse)
+    Y = df[toUse]
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=42)
     gnb = GaussianNB()
     y_pred = gnb.fit(X_train, y_train).predict(X_test)
@@ -345,7 +345,7 @@ def main():
 
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
-    naive_bayes_classification(df_all, 'open')
+    
     kmeans_clustering(df_all)
     hierarchical_clustering(df_all)
     mlp_regressor(df_all,'open')
@@ -354,9 +354,11 @@ def main():
     logistic_regression_with_class_weights(df_all,'open')
     ridge_regression(df_all,'open')
     lasso_regression(df_all,'open')
+    svm_regression(df_all,'open')
+    time_series_analysis(df_all)
     ""
     """
-    #svm_regression(df_all,'open')
-    time_series_analysis(df_all)
+    naive_bayes_classification(df_all, 'open_close')
+
 if __name__ == "__main__":
     main()
