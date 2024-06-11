@@ -2,8 +2,6 @@ import tkinter as tk
 import ttkbootstrap as ttk
 import os
 from PIL import Image, ImageTk
-import numpy as np
-import matplotlib.pyplot as plt
 import data as data_module
 
 SCRIPT_PATH = os.path.dirname(__file__)
@@ -14,8 +12,8 @@ MONTHLY_CSV_PATH = "../Resources/GOOG.US_MN1_cleaned.csv"
 
 class DataAnalysisLab:
     def __init__(self, root):
-        self.WIDTH = 1500
-        self.HEIGHT = 780
+        self.WIDTH = 1920
+        self.HEIGHT = 1080
         self.root = root
         self.root.title(APPLICATION_NAME)
         self.root.geometry(f"{self.WIDTH}x{self.HEIGHT}")
@@ -43,7 +41,7 @@ class DataAnalysisLab:
         self.algorithm_frame = ttk.Frame(self.main_frame)
         self.algorithm_frame.pack(anchor="n")
 
-        ttk.Label(self.algorithm_frame, text="Select the algorithm:", padding=20).pack()
+        ttk.Label(self.algorithm_frame, text="Select the algorithm:", padding=20).pack(pady=20)
 
         self.radio_button1 = ttk.Radiobutton(
             self.algorithm_frame, text="Timeseries", variable=self.ml_algorithm_var, value="Timeseries",
@@ -69,14 +67,68 @@ class DataAnalysisLab:
         self.graph_prediction_frame = ttk.Frame(self.graph_frame, height=self.HEIGHT)
         self.graph_prediction_frame.pack()
 
+
         self.tab2 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab2, text="Confusion Matrix", font=("Verdana", 20)).pack()
+
+
         self.tab3 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab3, text="K-Means", font=("Verdana", 20)).pack(pady=20)
+        self.kmeans_frame = ttk.Frame(self.tab3, padding=80)
+        self.kmeans_frame.pack()
+        self.generate_graph(self.kmeans_frame, "kmeans_elbow.png")
+        self.generate_graph(self.kmeans_frame, "kmeans_cluster.png")
+
+
         self.tab4 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab4, text="Principal Component Analysis (PCA)", font=("Verdana", 20)).pack()
+        self.pca_frame = ttk.Frame(self.tab4, padding=80)
+        self.pca_frame.pack()
+        self.generate_graph(self.pca_frame, "pca.png")
+
+
+        self.tab5 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab5, text="Singular Value Decomposition (SVD)", font=("Verdana", 20)).pack(pady=20)
+        self.svd_frame = ttk.Frame(self.tab3, padding=80)
+        self.svd_frame.pack()
+        self.generate_graph(self.svd_frame, "svd.png")
+
+        self.tab6 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab6, text="Autoregressive Integrated Moving Average (ARIMA)", font=("Verdana", 20)).pack(pady=20)
+        self.arima_frame_superior = ttk.Frame(self.tab3, padding=80)
+        self.arima_frame_superior.pack()
+        self.arima_frame_inferior = ttk.Frame(self.tab3, padding=80)
+        self.arima_frame_inferior.pack()
+        self.generate_graph(self.arima_frame_superior, "arima1.png")
+        self.generate_graph(self.arima_frame_superior, "arima2.png")
+        self.generate_graph(self.arima_frame_inferior, "arima2.png")
+
+
+        self.tab7 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab7, text="Seasonal Autoregressive Integrated Moving Average (ARIMA)", font=("Verdana", 20)).pack(pady=20)
+        self.sarima_frame_superior = ttk.Frame(self.tab3, padding=80)
+        self.sarima_frame_superior.pack()
+        self.sarima_frame_inferior = ttk.Frame(self.tab3, padding=80)
+        self.sarima_frame_inferior.pack()
+        self.generate_graph(self.sarima_frame_superior, "sarima1.png")
+        self.generate_graph(self.sarima_frame_superior, "sarima2.png")
+        self.generate_graph(self.sarima_frame_inferior, "sarima2.png")
+
+        self.tab8 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab8, text="Hierarchical Clustering", font=("Verdana", 20)).pack(pady=20)
+        self.hclustering_frame = ttk.Frame(self.tab8, padding=80)
+        self.hclustering_frame.pack()
+        self.generate_graph(self.hclustering_frame, "hierarchical_clustering.png")
+
 
         self.notebook.add(self.tab1, text='Prediction')
-        self.notebook.add(self.tab2, text='Algorithm 1')
-        self.notebook.add(self.tab3, text='Algorithm 2')
-        self.notebook.add(self.tab4, text='Algorithm 3')
+        self.notebook.add(self.tab2, text='Classification')
+        self.notebook.add(self.tab3, text='K-means')
+        self.notebook.add(self.tab4, text='PCA')
+        self.notebook.add(self.tab5, text='SVD')
+        self.notebook.add(self.tab6, text='ARIMA')
+        self.notebook.add(self.tab7, text='SARIMA')
+        self.notebook.add(self.tab8, text='H. Clustering')
         self.notebook.pack()
 
     def radio_selection(self):
@@ -146,6 +198,17 @@ class DataAnalysisLab:
 
                 test_size = self.test_size_var.get() / 100
                 data_module.mlp_regressor(df_all, self.prediction_var.get(), test_size)
+
+    def generate_graph(self, tab, graph_path):
+        path = os.path.join("../Graphs", graph_path)
+        try:
+            image = Image.open(path)
+            photo = ImageTk.PhotoImage(image)
+            label = tk.Label(tab, image=photo)
+            label.image = photo  # Keep a reference to avoid garbage collection
+            label.pack(side="left", pady=80)
+        except Exception as e:
+            print(f"Error loading graph image: {e}")
 
     def clear_main_frame(self):
         for widget in self.optional_frame.winfo_children():
