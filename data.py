@@ -147,7 +147,6 @@ def kmeans_clustering(df):
     plt.savefig("Graphs/kmeans_cluster.png")
     plt.show()
 
-
 def hierarchical_clustering(df):
     linkage_matrix = linkage(df[['open', 'high', 'low']], method='ward')
     plt.figure(figsize=(14, 7))
@@ -301,6 +300,7 @@ def main():
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
     kmeans_clustering(df_all)
+    """
     hierarchical_clustering(df_all)
     pca_analysis(df_all)
     truncated_svd_analysis(df_all)
