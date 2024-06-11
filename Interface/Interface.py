@@ -9,6 +9,9 @@ APPLICATION_NAME = "Data Analysis Lab"
 DAILY_CSV_PATH = "../Resources/GOOG.US_D1_cleaned.csv"
 WEEKLY_CSV_PATH = "../Resources/GOOG.US_W1_cleaned.csv"
 MONTHLY_CSV_PATH = "../Resources/GOOG.US_MN1_cleaned.csv"
+DAILY_MODEL_PATH = "../Models/sarima_model_daily.pkl"
+WEEKLY_MODEL_PATH = "../Models/sarima_model_weekly.pkl"
+MONTHLY_MODEL_PATH = "../Models/sarima_model_monthly.pkl"
 
 class DataAnalysisLab:
     def __init__(self, root):
@@ -99,20 +102,20 @@ class DataAnalysisLab:
         self.arima_frame_superior.pack()
         self.arima_frame_inferior = ttk.Frame(self.tab3, padding=80)
         self.arima_frame_inferior.pack()
-        self.generate_graph(self.arima_frame_superior, "arima1.png")
-        self.generate_graph(self.arima_frame_superior, "arima2.png")
-        self.generate_graph(self.arima_frame_inferior, "arima2.png")
+        self.generate_graph(self.arima_frame_superior, "arima_day.png")
+        self.generate_graph(self.arima_frame_superior, "arima_week.png")
+        self.generate_graph(self.arima_frame_inferior, "arima_month.png")
 
 
         self.tab7 = ttk.Frame(self.notebook)
-        ttk.Label(self.tab7, text="Seasonal Autoregressive Integrated Moving Average (ARIMA)", font=("Verdana", 20)).pack(pady=20)
+        ttk.Label(self.tab7, text="Seasonal Autoregressive Integrated Moving Average (SARIMA)", font=("Verdana", 20)).pack(pady=20)
         self.sarima_frame_superior = ttk.Frame(self.tab3, padding=80)
         self.sarima_frame_superior.pack()
         self.sarima_frame_inferior = ttk.Frame(self.tab3, padding=80)
         self.sarima_frame_inferior.pack()
-        self.generate_graph(self.sarima_frame_superior, "sarima1.png")
-        self.generate_graph(self.sarima_frame_superior, "sarima2.png")
-        self.generate_graph(self.sarima_frame_inferior, "sarima2.png")
+        self.generate_graph(self.sarima_frame_superior, "sarima_week.png")
+        self.generate_graph(self.sarima_frame_superior, "sarima_month.png")
+        #self.generate_graph(self.sarima_frame_inferior, "sarima2.png")
 
         self.tab8 = ttk.Frame(self.notebook)
         ttk.Label(self.tab8, text="Hierarchical Clustering", font=("Verdana", 20)).pack(pady=20)
@@ -180,18 +183,26 @@ class DataAnalysisLab:
                 and (self.prediction_size_var.get() != 0 or self.test_size_var.get() != 0)):
             if self.time_basis_var.get() == "daily":
                 file_path = DAILY_CSV_PATH
+                model_path = DAILY_MODEL_PATH
+                data_frequency = "Days"
+
             elif self.time_basis_var.get() == "weekly":
                 file_path = WEEKLY_CSV_PATH
+                model_path = WEEKLY_MODEL_PATH
+                data_frequency = "Weeks"
             else:
                 file_path = MONTHLY_CSV_PATH
+                model_path = MONTHLY_MODEL_PATH
+                data_frequency = "Months"
 
-            df_all = data_module.read_and_preprocess(file_path)
 
             if self.ml_algorithm_var.get() != self.ML_ALGORITHM:
                 ttk.Label(self.title_graph_frame,
                           text=f"Timeseries will be made for {self.prediction_size_var.get()} days "
                                "in a "f"{self.time_basis_var.get()} basis").pack(side="top")
+                data_module.forecast(model_path, self.prediction_size_var.get(), data_frequency)
             else:
+                df_all = data_module.read_and_preprocess(file_path)
                 ttk.Label(self.title_graph_frame, text=f"{self.ML_ALGORITHM} will be made with "
                                                        f"{self.test_size_var.get()}% test"
                                                        " with a "f"{self.time_basis_var.get()} basis").pack(side="top")
