@@ -6,6 +6,7 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 import matplotlib.pyplot as plt
 from statsmodels.tsa.seasonal import seasonal_decompose
 from sklearn.model_selection import train_test_split
+import pickle
 
 def read_and_preprocess(file_path):
     df = pd.read_csv(file_path)
@@ -17,7 +18,7 @@ def read_and_preprocess(file_path):
     df_all["open_close"] = df_all["open_close_diff"].apply(lambda x: 1 if x >= 0 else 0)
     return df_all
 
-file_path = 'Resources/GOOG.US_W1_cleaned.csv'
+file_path = 'Resources/GOOG.US_D1_cleaned.csv'
 data = read_and_preprocess(file_path)
 
 # Create a time series using the row number instead of the datetime column
@@ -27,7 +28,7 @@ data['day_of_year'] = data.index + 1
 time_series_data = data[['day_of_year', 'close']]
 
 # Decompose the time series
-decomposition = seasonal_decompose(time_series_data['close'], model='multiplicative', period=52)
+decomposition = seasonal_decompose(time_series_data['close'], model='multiplicative', period=365)
 
 # Plot the decomposed components
 decomposition.plot()
@@ -100,8 +101,15 @@ plt.grid(True)
 plt.show()
 
 # Define and fit the SARIMA model
-sarima_model = SARIMAX(train_data['close'], order=(5, 1, 0), seasonal_order=(1, 1, 1, 52))  # SARIMA(p,d,q)(P,D,Q,s)
+sarima_model = SARIMAX(train_data['close'], order=(5, 1, 0), seasonal_order=(1, 1, 1, 365))  # SARIMA(p,d,q)(P,D,Q,s)
 sarima_result = sarima_model.fit()
+sarima_model_path = 'sarima_model.pkl'
+
+# Save the model to a file
+with open(sarima_model_path, 'wb') as file:
+    pickle.dump(sarima_result, file)
+
+print(f'Model saved to {sarima_model_path}')
 
 # Forecast the next 30 days on the test set
 sarima_forecast = sarima_result.get_forecast(steps=len(test_data))
