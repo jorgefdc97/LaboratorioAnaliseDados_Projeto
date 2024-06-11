@@ -110,8 +110,8 @@ def naive_bayes_classification(df, column, test):
     print("Classification Report:\n", classification_report(y_test, y_pred))
     cm = confusion_matrix(y_test, y_pred)
     ConfusionMatrixDisplay(cm).plot()
-    plt.show()
     plt.savefig('Graphs/naive_bayes_confusion_matrix.png')
+    plt.show()
     scores = cross_val_score(gnb, X, Y, cv=5)
     print("Cross-validation scores:", scores)
     print("Mean:", scores.mean())
@@ -153,8 +153,8 @@ def hierarchical_clustering(df):
     plt.title('Hierarchical Clustering Dendrogram')
     plt.xlabel('Sample index')
     plt.ylabel('Distance')
-    #plt.show()
     plt.savefig('Graphs/hierarchical_clustering.png')
+    plt.show()
 
 
 def mlp_regressor(df, column, test):
@@ -325,9 +325,8 @@ def time_series_analysis(df_all):
     plt.ylabel('Close Price')
     plt.legend()
     plt.grid(True)
-    #plt.show()
     plt.savefig('Graphs/timeseries_forecast.png')
-
+    plt.show()
 
     # Check residuals
     residuals = model_fit.resid
@@ -366,6 +365,7 @@ def main():
     ""
     """
     kmeans_clustering(df_all)
+    naive_bayes_classification(df_all, 'open', )
     #hierarchical_clustering(df_all)
     #pca_analysis(df_all)
     #truncated_svd_analysis(df_all)
