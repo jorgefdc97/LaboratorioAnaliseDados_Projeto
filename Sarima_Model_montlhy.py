@@ -32,7 +32,7 @@ decomposition = seasonal_decompose(time_series_data['close'], model='multiplicat
 
 # Plot the decomposed components
 decomposition.plot()
-plt.show()
+plt.savefig('Graphs/DeComp.png')
 
 # Calculate Simple Moving Average (SMA) and Exponential Moving Average (EMA)
 data['SMA_20'] = data['close'].rolling(window=20).mean()
@@ -71,7 +71,7 @@ plt.legend()
 plt.grid(True)
 
 plt.tight_layout()
-plt.show()
+plt.savefig("Graphs/plotDaily.png")
 
 # Prepare the data for ARIMA and SARIMA models
 arima_data = data.dropna(subset=['daily_return'])[['day_of_year', 'close']]
@@ -98,7 +98,7 @@ plt.xlabel('Day of the Year')
 plt.ylabel('Close Price')
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.savefig("Graphs/ARIMA.png")
 
 # Define and fit the SARIMA model
 sarima_model = SARIMAX(train_data['close'], order=(5, 1, 0), seasonal_order=(1, 1, 1, 12))  # SARIMA(p,d,q)(P,D,Q,s)
@@ -127,7 +127,7 @@ plt.xlabel('Day of the Year')
 plt.ylabel('Close Price')
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.savefig("Graphs/SARIMA.png")
 
 # Print model summaries and error metrics
 print("ARIMA Model Summary:")

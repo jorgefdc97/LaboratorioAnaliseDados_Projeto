@@ -142,7 +142,6 @@ def kmeans_clustering(df):
     plt.legend()
     plt.show()
 
-
 def hierarchical_clustering(df):
     linkage_matrix = linkage(df[['open', 'high', 'low']], method='ward')
     plt.figure(figsize=(14, 7))
@@ -354,8 +353,9 @@ def main():
 
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
-    
+     """
     kmeans_clustering(df_all)
+    """
     hierarchical_clustering(df_all)
     mlp_regressor(df_all,'open')
     pca_analysis(df_all)
@@ -365,10 +365,10 @@ def main():
     lasso_regression(df_all,'open')
     svm_regression(df_all,'open')
     time_series_analysis(df_all)
-    ""
-    """
+    
     #svm_regression(df_all,'open')
     time_series_analysis(df_all)
+     """
 
    
 if __name__ == "__main__":
