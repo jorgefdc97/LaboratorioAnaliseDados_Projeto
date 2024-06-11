@@ -111,6 +111,7 @@ def naive_bayes_classification(df, column, test):
     cm = confusion_matrix(y_test, y_pred)
     ConfusionMatrixDisplay(cm).plot()
     plt.show()
+    plt.savefig('Graphs/naive_bayes_confusion_matrix.png')
     scores = cross_val_score(gnb, X, Y, cv=5)
     print("Cross-validation scores:", scores)
     print("Mean:", scores.mean())
@@ -127,6 +128,7 @@ def kmeans_clustering(df):
     plt.title('The Elbow Method')
     plt.xlabel('Number of clusters')
     plt.ylabel('WCSS')
+    plt.savefig('Graphs/kmeans_elbow')
     plt.show()
     kmeans = KMeans(n_clusters=5, random_state=42)
     df['cluster'] = kmeans.fit_predict(df[['open', 'high', 'low']])
@@ -140,6 +142,7 @@ def kmeans_clustering(df):
     plt.xlabel('High')
     plt.ylabel('Low')
     plt.legend()
+    plt.savefig("Graphs/kmeans_cluster.png")
     plt.show()
 
 
@@ -150,7 +153,8 @@ def hierarchical_clustering(df):
     plt.title('Hierarchical Clustering Dendrogram')
     plt.xlabel('Sample index')
     plt.ylabel('Distance')
-    plt.show()
+    #plt.show()
+    plt.savefig('Graphs/hierarchical_clustering.png')
 
 
 def mlp_regressor(df, column, test):
@@ -172,7 +176,8 @@ def pca_analysis(df):
     plt.scatter(pca_data[:, 0], pca_data[:, 1], c=df['open'], cmap='prism')
     plt.xlabel('First Principal Component')
     plt.ylabel('Second Principal Component')
-    plt.show()
+    #plt.show()
+    plt.savefig('Graphs/pca.png')
 
 
 def truncated_svd_analysis(df):
@@ -185,7 +190,8 @@ def truncated_svd_analysis(df):
     plt.scatter(svd_data[:, 0], svd_data[:, 1], c=df['open'], cmap='prism')
     plt.xlabel('First SVD Component')
     plt.ylabel('Second SVD Component')
-    plt.show()
+    #plt.show()
+    plt.savefig('Graphs/svd.png')
 
 
 def logistic_regression_with_class_weights(df, column, test):
@@ -319,7 +325,8 @@ def time_series_analysis(df_all):
     plt.ylabel('Close Price')
     plt.legend()
     plt.grid(True)
-    plt.show()
+    #plt.show()
+    plt.savefig('Graphs/timeseries_forecast.png')
 
 
     # Check residuals
@@ -328,6 +335,7 @@ def time_series_analysis(df_all):
     plt.plot(residuals)
     plt.title('Residuals')
     plt.show()
+
     fig, axes = plt.subplots(1, 2, figsize=(15, 4))
     axes[0].stem(acf(residuals))
     axes[0].set_title('ACF of Residuals')
@@ -340,6 +348,7 @@ def time_series_analysis(df_all):
 def main():
     file_path = "Resources/GOOG.US_D1_cleaned.csv"
     df_all = read_and_preprocess(file_path)
+
     """
     ""
     # Descriptive statistics and EDA
@@ -354,21 +363,15 @@ def main():
 
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
-    
-    kmeans_clustering(df_all)
-    hierarchical_clustering(df_all)
-    mlp_regressor(df_all,'open')
-    pca_analysis(df_all)
-    truncated_svd_analysis(df_all)
-    logistic_regression_with_class_weights(df_all,'open')
-    ridge_regression(df_all,'open')
-    lasso_regression(df_all,'open')
-    svm_regression(df_all,'open')
-    time_series_analysis(df_all)
     ""
     """
+    kmeans_clustering(df_all)
+    #hierarchical_clustering(df_all)
+    #pca_analysis(df_all)
+    #truncated_svd_analysis(df_all)
+
     #svm_regression(df_all,'open')
-    time_series_analysis(df_all)
+    #time_series_analysis(df_all)
 
    
 if __name__ == "__main__":
