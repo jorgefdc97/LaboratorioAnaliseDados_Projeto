@@ -295,15 +295,16 @@ def main():
     # Model fitting and evaluation
     linear_regression(df_all, 'open')
     kmeans_clustering(df_all)
-    """
+    
     hierarchical_clustering(df_all)
     pca_analysis(df_all)
     truncated_svd_analysis(df_all)
     svm_regression(df_all,'open')
-    ""
     """
-    model_path = 'sarima_weekly_model.pkl'
-    weekly_forecast_mean = forecast(model_path, period=12, data_frequency='Week')
+    model_path = 'sarima_model_Monthly.pkl'
+    weekly_forecast_mean = forecast(model_path, period=12, data_frequency='month')
+    plot_residuals(model_path)
+
 
 if __name__ == "__main__":
     main()
