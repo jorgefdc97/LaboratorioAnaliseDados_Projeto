@@ -272,7 +272,7 @@ def plot_residuals(model_path):
     plot_pacf(residuals, lags=50)
     plt.show()
 
-def forecast(model_path, period, data_frequency='Days'):
+def forecast(model_path, period, data_frequency, save_path):
     # Load the SARIMA model from the specified path
     with open(model_path, 'rb') as file:
         model = pickle.load(file)
@@ -289,10 +289,8 @@ def forecast(model_path, period, data_frequency='Days'):
     plt.ylabel('Forecasted Value')
     plt.legend()
     plt.grid(True)
-
-    plt.savefig('Graphs/prediction.png')
-
-    plt.show()
+    plt.savefig(save_path)
+    #plt.show()
 
     # Return the mean of the forecasted values
     forecast_mean_value = np.mean(forecast_mean)
