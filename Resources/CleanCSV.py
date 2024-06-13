@@ -3,7 +3,7 @@ import pandas as pd
 
 
 # Load the CSV file
-file_path = 'Resources/GOOG.US_MN1.csv'
+file_path = 'GOOG.US_MN1.csv'
 data = pd.read_csv(file_path)
 
 # Step 1: Remove duplicate rows

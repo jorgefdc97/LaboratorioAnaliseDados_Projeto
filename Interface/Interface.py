@@ -14,6 +14,7 @@ DAILY_MODEL_PATH = "../Models/sarima_model_daily.pkl"
 WEEKLY_MODEL_PATH = "../Models/sarima_model_weekly.pkl"
 MONTHLY_MODEL_PATH = "../Models/sarima_model_monthly.pkl"
 
+
 class DataAnalysisLab:
     def __init__(self, root):
         self.WIDTH = 1920

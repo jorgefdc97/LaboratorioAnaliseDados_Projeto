@@ -180,7 +180,6 @@ def pca_analysis(df):
     #plt.show()
     plt.savefig('Graphs/pca.png')
 
-
 def truncated_svd_analysis(df):
     scaler = StandardScaler()
     scaled_data = scaler.fit_transform(df.drop(columns=['open', 'cluster']))
@@ -193,7 +192,6 @@ def truncated_svd_analysis(df):
     plt.ylabel('Second SVD Component')
     #plt.show()
     plt.savefig('Graphs/svd.png')
-
 
 def logistic_regression_with_class_weights(df, column, test):
     X = df.drop(columns=[column])
