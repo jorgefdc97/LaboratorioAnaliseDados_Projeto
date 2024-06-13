@@ -129,9 +129,10 @@ class DataAnalysisLab:
         self.sarima_frame_superior.pack()
         self.sarima_frame_inferior = ttk.Frame(self.tab7)
         self.sarima_frame_inferior.pack()
+        #self.generate_graph(self.sarima_frame_superior, "sarima_day.png", True)
         self.generate_graph(self.sarima_frame_superior, "sarima_week.png", True)
         self.generate_graph(self.sarima_frame_superior, "sarima_month.png", True)
-        #self.generate_graph(self.sarima_frame_inferior, "sarima2.png")
+        #self.generate_graph(self.sarima_frame_inferior, "sarima_month.png", True)
 
         self.tab8 = ttk.Frame(self.notebook)
         ttk.Label(self.tab8, text="Hierarchical Clustering", font=("Verdana", 20)).pack(pady=20)
@@ -206,7 +207,7 @@ class DataAnalysisLab:
         print(f"Prediction Size: {self.prediction_size_var.get()}")
         print(f"Test Size: {self.test_size_var.get()}")
         self.clear_graph_frame()
-        if (self.time_basis_var.get() != "" and self.prediction_var.get() != ""
+        if (self.time_basis_var.get() != "" or self.prediction_var.get() != ""
                 and (self.prediction_size_var.get() != 0 or self.test_size_var.get() != 0)):
             if self.time_basis_var.get() == "daily":
                 file_path = DAILY_CSV_PATH
@@ -227,7 +228,8 @@ class DataAnalysisLab:
                 ttk.Label(self.title_graph_frame,
                           text=f"Timeseries will be made for {self.prediction_size_var.get()} days "
                                "in a "f"{self.time_basis_var.get()} basis").pack(side="top")
-                data_module.forecast(model_path, self.prediction_size_var.get(), data_frequency)
+                data_module.forecast(model_path, self.prediction_size_var.get(), data_frequency,
+                                     "../Graphs/prediction.png")
                 self.generate_graph(self.graph_prediction_frame, "prediction.png", True)
             else:
                 df_all = data_module.read_and_preprocess(file_path)
@@ -236,7 +238,6 @@ class DataAnalysisLab:
                                                        " in a "f"{self.time_basis_var.get()} basis").pack(side="top")
 
                 test_size = self.test_size_var.get() / 100
-                print(test_size)
                 data_module.svm_regression(df_all, self.prediction_var.get(), test_size, "../Graphs/prediction.png")
                 self.generate_graph(self.graph_prediction_frame, "prediction.png", True)
 
