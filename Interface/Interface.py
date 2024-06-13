@@ -93,16 +93,24 @@ class DataAnalysisLab:
 
         self.tab4 = ttk.Frame(self.notebook)
         ttk.Label(self.tab4, text="Principal Component Analysis (PCA)", font=("Verdana", 20)).pack()
-        self.pca_frame = ttk.Frame(self.tab4, padding=80)
-        self.pca_frame.pack()
-        self.generate_graph(self.pca_frame, "pca.png", False)
+        self.pca_frame_superior = ttk.Frame(self.tab4, padding=0)
+        self.pca_frame_inferior = ttk.Frame(self.tab4, padding=0)
+        self.pca_frame_superior.pack()
+        self.pca_frame_inferior.pack()
+        self.generate_graph(self.pca_frame_superior, "pca_daily.png", True)
+        self.generate_graph(self.pca_frame_superior, "pca_weekly.png", True)
+        self.generate_graph(self.pca_frame_inferior, "pca_monthly.png", True)
 
 
         self.tab5 = ttk.Frame(self.notebook)
-        ttk.Label(self.tab5, text="Singular Value Decomposition (SVD)", font=("Verdana", 20)).pack(pady=20)
-        self.svd_frame = ttk.Frame(self.tab5, padding=80)
-        self.svd_frame.pack()
-        self.generate_graph(self.svd_frame, "svd.png", False)
+        ttk.Label(self.tab5, text="Moving averages - Timeseries", font=("Verdana", 20)).pack(pady=20)
+        self.averages_frame_superior = ttk.Frame(self.tab5, padding=0)
+        self.averages_frame_inferior = ttk.Frame(self.tab5, padding=0)
+        self.averages_frame_superior.pack()
+        self.averages_frame_inferior.pack()
+        self.generate_graph(self.averages_frame_superior, "moving_averages_daily.png", True)
+        self.generate_graph(self.averages_frame_superior, "moving_averages_weekly.png", True)
+        self.generate_graph(self.averages_frame_inferior, "moving_averages_monthly.png", True)
 
         self.tab6 = ttk.Frame(self.notebook)
         ttk.Label(self.tab6, text="Autoregressive Integrated Moving Average (ARIMA)", font=("Verdana", 20)).pack(pady=20)
@@ -131,15 +139,26 @@ class DataAnalysisLab:
         self.hclustering_frame.pack()
         self.generate_graph(self.hclustering_frame, "hierarchical_clustering.png", False)
 
+        self.tab9 = ttk.Frame(self.notebook)
+        ttk.Label(self.tab9, text="Timeseries decomposition", font=("Verdana", 20)).pack(pady=20)
+        self.decomposition_frame_superior = ttk.Frame(self.tab9, padding=0)
+        self.decomposition_frame_inferior = ttk.Frame(self.tab9, padding=0)
+        self.decomposition_frame_superior.pack()
+        self.decomposition_frame_inferior.pack()
+        self.generate_graph(self.decomposition_frame_superior, "timeseries_daily_decomposition.png", True)
+        self.generate_graph(self.decomposition_frame_superior, "timeseries_weekly_decomposition.png", True)
+        self.generate_graph(self.decomposition_frame_inferior, "timeseries_monthly_decomposition.png", True)
+
 
         self.notebook.add(self.tab1, text='Prediction')
         self.notebook.add(self.tab2, text='Classification')
         self.notebook.add(self.tab3, text='K-means')
         self.notebook.add(self.tab4, text='PCA')
-        self.notebook.add(self.tab5, text='SVD')
+        self.notebook.add(self.tab5, text='M. Averages')
         self.notebook.add(self.tab6, text='ARIMA')
         self.notebook.add(self.tab7, text='SARIMA')
         self.notebook.add(self.tab8, text='H. Clustering')
+        self.notebook.add(self.tab9, text='Decomposition')
         self.notebook.pack()
 
     def radio_selection(self):
@@ -209,6 +228,7 @@ class DataAnalysisLab:
                           text=f"Timeseries will be made for {self.prediction_size_var.get()} days "
                                "in a "f"{self.time_basis_var.get()} basis").pack(side="top")
                 data_module.forecast(model_path, self.prediction_size_var.get(), data_frequency)
+                self.generate_graph(self.graph_prediction_frame, "prediction.png", True)
             else:
                 df_all = data_module.read_and_preprocess(file_path)
                 ttk.Label(self.title_graph_frame, text=f"{self.ML_ALGORITHM} prevision will be made with "

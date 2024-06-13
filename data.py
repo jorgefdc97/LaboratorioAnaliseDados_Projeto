@@ -144,7 +144,7 @@ def kmeans_clustering(df):
     plt.xlabel('High')
     plt.ylabel('Low')
     plt.legend()
-    plt.savefig("Graphs/kmeans_cluster.png")
+    #plt.savefig("Graphs/kmeans_cluster_daily.png")
     plt.show()
 
 def hierarchical_clustering(df):
@@ -177,8 +177,8 @@ def pca_analysis(df):
     plt.scatter(pca_data[:, 0], pca_data[:, 1], c=df['open'], cmap='prism')
     plt.xlabel('First Principal Component')
     plt.ylabel('Second Principal Component')
-    #plt.show()
-    plt.savefig('Graphs/pca.png')
+    plt.savefig('Graphs/pca_monthly.png')
+    plt.show()
 
 def truncated_svd_analysis(df):
     scaler = StandardScaler()
@@ -290,7 +290,7 @@ def forecast(model_path, period, data_frequency='Days'):
     plt.legend()
     plt.grid(True)
 
-    plt.savefig('Graphs/timeseries_forecast.png')
+    plt.savefig('Graphs/prediction.png')
 
     plt.show()
 
@@ -323,7 +323,9 @@ def main():
     svm_regression(df_all,'open')
     ""
     """
-    naive_bayes_classification(df_all, 'open_close', 0.3)
+    #naive_bayes_classification(df_all, 'open_close', 0.3)
+    kmeans_clustering(df_all)
+    pca_analysis(df_all)
     #svm_regression(df_all, 'open', 0.3)
     #model_path = 'sarima_weekly_model.pkl'
     #weekly_forecast_mean = forecast(model_path, period=12, data_frequency='Week')
